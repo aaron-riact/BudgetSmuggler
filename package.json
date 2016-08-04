@@ -4,6 +4,8 @@
   "description": "smuggle your budget",
   "main": "index.js",
   "scripts": {
+    "serve": "beefy src/index.js:index.js --live --cwd src",
+    "build": "browserify index.js --debug -p [minifyify --map bundle.js.map --output build/bundle.js.map] > build/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
