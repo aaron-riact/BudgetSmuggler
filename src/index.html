@@ -2,11 +2,105 @@
 <html>
   <head>
     <title>Budget Smuggler</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <!-- contents of this file will be placed inside the <head> -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans" />
     <style>
-      h1, p, div { text-align: center; }
-      html       { background: #fffffe; }
+      body {
+        background-color: #f6704b;
+      }
+      .nav { 
+        padding: 5px 0;
+      }
+      .title {
+        background-color: #8e44ad;
+        border-radius: 5px 5px 0 0;
+        text-align: center;
+        margin: -14px;
+        margin-bottom: 20px; 
+        padding: 5px;
+        font-size: 24px;
+        height: 46px;
+        line-height: 46px;
+      }
+      .header {
+        color: rgba(255, 255, 255, 0.3);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        margin-bottom: 10px;
+      }
+      .total .months {
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+      }
+      .budget {
+        padding: 14px;
+        margin: 50px auto;
+        width: 82%;
+        font-family: "Open Sans";
+        background-color: #354b60;
+        border-radius: 5px;
+        color: white;
+        box-shadow: 0 0 40px 5px rgba(0, 0, 0, .4);
+      }
+      button {
+        background-color: rgba(255, 255, 255, 0.3);
+        margin: 4px;
+        border-radius: 8px;
+        border: none;
+        height: 18px;
+        width: 20px;
+      }
+      li {
+        display: block;
+      }
+      .section {
+        margin-top: 8px;
+        --border: 1px solid red;
+      }
+      .category {
+        --border: 0px solid blue;
+      }
+      .extended {
+        --border: 0px solid grey;
+      }
+      .months ol {
+        display: flex;
+        margin: 0px
+      }
+      .months li {
+        padding: 4px 14px;
+        border: 1px solid transparent;
+        text-align: center;
+        padding: 4px 0;
+        width: 40px;
+      }
+      .nav {
+        display: inline-block;
+        width: 100px;
+        float: left;
+      }
+      .category .name {
+        margin-left: 7px;
+      }
+      .extended .name {
+        margin-left: 15px;
+      }
+      .extended input {
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        border: none;
+        text-align: center;
+        font: inherit;
+        background-color: inherit;
+        color: inherit;
+      }
+      .new {
+        float: left;
+      }
+      button.extended, button.total {
+        visibility: hidden;
+      }
     </style>
+
   </head>
   <body>
     <div class="container">
