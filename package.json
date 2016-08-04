@@ -22,5 +22,8 @@
   "homepage": "https://github.com/krisl/BudgetSmuggler#readme",
   "dependencies": {
     "yo-yo": "^1.2.2"
+  },
+  "devDependencies": {
+    "minifyify": "^7.3.3"
   }
 }
