@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/krisl/BudgetSmuggler#readme",
   "dependencies": {
+    "mobx": "^2.4.1",
     "yo-yo": "^1.2.2"
   },
   "devDependencies": {
