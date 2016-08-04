@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/krisl/BudgetSmuggler/issues"
   },
-  "homepage": "https://github.com/krisl/BudgetSmuggler#readme"
+  "homepage": "https://github.com/krisl/BudgetSmuggler#readme",
+  "dependencies": {
+    "yo-yo": "^1.2.2"
+  }
 }
