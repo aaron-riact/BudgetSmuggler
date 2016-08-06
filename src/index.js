@@ -157,7 +157,7 @@ const inputComp = state =>
 const buttonComp = state => 
   yo`<button onclick=${ev => state.age++}>Age up!</button>`;
 
-const appComp = state => yo`<div>
+const appComp = state => yo`<div class='container'>
 	<div class='budget'>
     ${renderTitle()}
     ${renderMonths()}
