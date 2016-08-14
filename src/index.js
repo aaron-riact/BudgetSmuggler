@@ -2,6 +2,7 @@ const yo = require('yo-yo');
 const {observable, autorun, computed} = require("mobx");
 
 const appState = observable({
+    editing: false,
     total: function() { console.log('TOT'); return sumChildren(this.sections) },
   	sections: [
       {
@@ -102,19 +103,29 @@ const makeNewChild = (parent, parentClass, e) => {
   })
 }
 
+const toggleEditMode = () =>
+  appState.editing = !appState.editing
+
 const renderTitle = () =>
-  yo`<div class='title'>
-    Budget Smuggler
-  </div>`
+  yo`
+    <div>
+      <button class='edit-button' onclick=${toggleEditMode}>
+        Edit
+      </button>
+      <div class='title'>
+        Budget Smuggler
+      </div>
+    </div>
+  `
   
 const renderEditButton = (root, rootClass) =>
-  yo`
+  appState.editing ? yo`
     <div class='new'>
       <button class=${rootClass} onclick=${makeNewChild.bind(null, root, rootClass)}>
         +
       </button>
     </div>
-  `
+  ` : ''
 
 const renderMonths = () =>
   yo`<div class='header'>
