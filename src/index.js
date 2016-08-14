@@ -69,9 +69,17 @@ const sumChildren = (children) =>
         
 const onClick = (node, ev) => { 
   //console.log(computed);
-	node.open = !node.open
   ev.preventDefault()
   ev.stopPropagation()
+  if (appState.editing) {
+    console.log('making node editable')
+    return appState.editingNode = node
+  }
+	node.open = !node.open
+}
+
+const onFocus = (node, ev) => {
+  console.log('onFocus', ev)
 }
 
 const makeRow = (node, klass) =>
@@ -138,10 +146,19 @@ const renderMonths = () =>
     </div>
   </div>
   ` 
+
+function onBlur (node, ev) {
+  node.name = ev.target.value
+  appState.editingNode = null
+}
+
 const makeNode = (node, klass, children) =>
-   yo`<div class=${klass} onclick=${onClick.bind(null, node)}>
+   yo`<div class=${klass} onclick=${onClick.bind(null, node)} onfocus=${onFocus}>
     <div class='nav'>
-    	<span class='name'>${node.name}</span>
+      ${appState.editingNode == node
+        ? yo`<input value=${node.name} onblur=${onBlur.bind(null, node)}/>`
+    	  : yo`<span class='name'>${node.name}</span>`
+      }
     </div>
     ${renderEditButton(node, klass)}
     <div class='months'>
