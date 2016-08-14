@@ -107,14 +107,21 @@ const renderTitle = () =>
     Budget Smuggler
   </div>`
   
+const renderEditButton = (root, rootClass) =>
+  yo`
+    <div class='new'>
+      <button class=${rootClass} onclick=${makeNewChild.bind(null, root, rootClass)}>
+        +
+      </button>
+    </div>
+  `
+
 const renderMonths = () =>
   yo`<div class='header'>
     <div class='nav'>
       <span class='name'>Months</span>
     </div>
-    <div class='new'>
-      <button class='section' onclick=${makeNewChild.bind(null, appState, 'root')}>+</button>
-    </div>
+    ${renderEditButton(appState, 'root')}
     <div class='months'>
       ${makeRow({values:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']})}
     </div>
@@ -125,9 +132,7 @@ const makeNode = (node, klass, children) =>
     <div class='nav'>
     	<span class='name'>${node.name}</span>
     </div>
-    <div class='new'>
-      <button class=${klass} onclick=${makeNewChild.bind(null, node, klass)}>+</button>
-    </div>
+    ${renderEditButton(node, klass)}
     <div class='months'>
       ${makeRow(node, klass)}
     </div>
