@@ -152,13 +152,16 @@ const makeNode = (node, klass, children) =>
     </div>
   </div>`
           
+const isOpen = (node) =>
+  node.open || appState.editing
+
 const renderTree = sections =>
   yo`<div class='root'>
   	${sections.map(section =>
       makeNode(section, 'section',
-  			section.open && section.categories.map(category =>
+  			isOpen(section) && section.categories.map(category =>
       		makeNode(category, 'category',
-      			category.open && category.extendeds && category.extendeds.map(extended =>
+      			isOpen(category) && category.extendeds && category.extendeds.map(extended =>
      				 	makeNode(extended, 'extended')
             )
       		)
