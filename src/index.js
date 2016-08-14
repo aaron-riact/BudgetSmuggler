@@ -173,9 +173,6 @@ const renderTree = sections =>
 const inputComp = state =>
   yo`<input value="${state.name}" oninput=${ev => state.name = ev.target.value}>`
 
-const buttonComp = state => 
-  yo`<button onclick=${ev => state.age++}>Age up!</button>`;
-
 const appComp = state => yo`<div class='container'>
 	<div class='budget'>
     ${renderTitle()}
