@@ -1,5 +1,5 @@
 const yo = require('yo-yo');
-const {appState, makeNewChild} = require('./appState')
+const {appState, makeNewChild, init} = require('./appState')
 const {autorun} = require("mobx");
 
 const onClick = (node, ev) => { 
@@ -44,14 +44,16 @@ const renderTitle = () =>
     </div>
   `
   
-const renderEditButton = (root, rootClass) =>
-  appState.editing ? yo`
+const renderEditButton = (root, rootClass) => {
+  const name = rootClass === 'root' ? 'sec' : rootClass === 'section' ? 'cat' : 'ext'
+  return appState.editing ? yo`
     <div class='new'>
-      <button class=${rootClass} onclick=${makeNewChild.bind(null, root, rootClass)}>
+      <button class=${rootClass} onclick=${makeNewChild.bind(null, root, rootClass, name)}>
         +
       </button>
     </div>
   ` : ''
+}
 
 const renderMonths = () =>
   yo`<div class='header'>
@@ -120,4 +122,5 @@ const appComp = state => yo`<div class='container'>
 const ref = document.body.appendChild(document.createElement('div')); 
 
 const x = autorun(() => yo.update(ref, appComp(appState)));
+init()
 //console.log('donex', x); 
