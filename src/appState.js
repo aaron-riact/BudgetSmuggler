@@ -4,7 +4,7 @@ const sumChildren = (children) =>
   children
     .map(node => node.values)
     .reduce((vals1, vals2) =>
-      vals1.map((v,i) => (v || 0) + (vals2[i] || 0) ), [...Array(appState.budgets[appState.currentBudget])].map(() => 0)
+      vals1.map((v,i) => (v || 0) + (vals2[i] || 0) ), [...Array(monthsWidth())].map(() => 0)
     )
 
 const makeNewChild = (parent, parentClass, name, e) => {
@@ -12,7 +12,7 @@ const makeNewChild = (parent, parentClass, name, e) => {
   if(parentClass==='category') {
     const node = {
       name: typeof name === 'string' ? name : 'ext',
-      values:Array(appState.budgets[appState.currentBudget])
+      values:Array(monthsWidth())
     }
     parent.extendeds.push(node); 
     return node
@@ -39,6 +39,14 @@ const makeNewChild = (parent, parentClass, name, e) => {
   }
 }
 
+const monthsWidth = () =>
+  appState.budgets.reduce((a, b) => a + b, 0)
+
+const currentOffset = () =>
+  appState.budgets
+    .slice(0, appState.currentBudget)
+    .reduce((a, b) => a + b, 0)
+
 const appState = observable({
   startMonth: 0,
   budgets: [15, 12],
@@ -63,4 +71,4 @@ function init() {
   makeNewChild(c2, 'category', 'ext 2-1-3')
 }
 
-module.exports = {appState, makeNewChild, init}
+module.exports = {appState, makeNewChild, init, currentOffset}

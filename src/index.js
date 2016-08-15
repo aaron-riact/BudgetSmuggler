@@ -1,5 +1,5 @@
 const yo = require('yo-yo');
-const {appState, makeNewChild, init} = require('./appState')
+const {appState, makeNewChild, init, currentOffset} = require('./appState')
 const {autorun} = require("mobx");
 
 const onClick = (node, ev) => { 
@@ -17,14 +17,15 @@ const onFocus = (node, ev) => {
   console.log('onFocus', ev)
 }
 
+var range = (start, end) => [...Array(end - start + 1)].map((_, i) => start + i);
 const getBudgetSize = () => appState.budgets[appState.currentBudget]
 const getColArray = () =>
-  Array.from({length: getBudgetSize()}, (_, i) => i)
+  Array.from({length: getBudgetSize()}, (_, i) => i + currentOffset())
 
 const getMonthsArray = () => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const budgetSize = getBudgetSize()
-  const array = Array.from({length: getBudgetSize()},
+  const array = Array.from({length: getBudgetSize() + currentOffset()},
     (_, i) => months[(i + appState.startMonth) % 12]
   )
   console.log('array', array)
