@@ -17,13 +17,27 @@ const onFocus = (node, ev) => {
   console.log('onFocus', ev)
 }
 
+const getBudgetSize = () => appState.budgets[appState.currentBudget]
+const getColArray = () =>
+  Array.from({length: getBudgetSize()}, (_, i) => i)
+
+const getMonthsArray = () => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const budgetSize = getBudgetSize()
+  const array = Array.from({length: getBudgetSize()},
+    (_, i) => months[(i + appState.startMonth) % 12]
+  )
+  console.log('array', array)
+  return array
+}
+
 const makeRow = (node, klass) =>
   yo`<ol>
-    ${[1,2,3,4,5,6,7,8,9,10,11,12].map(month =>
+    ${getColArray().map(month =>
       yo`<li>
         ${klass === 'extended'
-          ? yo`<input value="${node.values[month-1] || 0}" oninput=${ev => node.values[month-1] = parseFloat(ev.target.value) || 0}>`
-      		: node.values[month-1] || 0
+          ? yo`<input value="${node.values[month] || 0}" oninput=${ev => node.values[month] = parseFloat(ev.target.value) || 0}>`
+      		: node.values[month] || 0
 				}
       </li>`
     )}
@@ -62,7 +76,7 @@ const renderMonths = () =>
     </div>
     ${renderEditButton(appState, 'root')}
     <div class='months'>
-      ${makeRow({values:['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']})}
+      ${makeRow({values: getMonthsArray()})}
     </div>
   </div>
   ` 

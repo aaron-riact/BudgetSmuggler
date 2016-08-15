@@ -4,7 +4,7 @@ const sumChildren = (children) =>
   children
     .map(node => node.values)
     .reduce((vals1, vals2) =>
-      vals1.map((v,i) => (v || 0) + (vals2[i] || 0) ), [0,0,0,0,0,0,0,0,0,0,0,0]
+      vals1.map((v,i) => (v || 0) + (vals2[i] || 0) ), [...Array(appState.budgets[appState.currentBudget])].map(() => 0)
     )
 
 const makeNewChild = (parent, parentClass, name, e) => {
@@ -12,7 +12,7 @@ const makeNewChild = (parent, parentClass, name, e) => {
   if(parentClass==='category') {
     const node = {
       name: typeof name === 'string' ? name : 'ext',
-      values:Array(12)
+      values:Array(appState.budgets[appState.currentBudget])
     }
     parent.extendeds.push(node); 
     return node
@@ -40,6 +40,9 @@ const makeNewChild = (parent, parentClass, name, e) => {
 }
 
 const appState = observable({
+  startMonth: 0,
+  budgets: [15],
+  currentBudget: 0,
   editing: false,
   editingNode: null,
   total: function() { console.log('TOT'); return sumChildren(this.sections) },
