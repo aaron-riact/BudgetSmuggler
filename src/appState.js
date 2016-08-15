@@ -41,7 +41,7 @@ const makeNewChild = (parent, parentClass, name, e) => {
 
 const appState = observable({
   startMonth: 0,
-  budgets: [15],
+  budgets: [15, 12],
   currentBudget: 0,
   editing: false,
   editingNode: null,

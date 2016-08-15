@@ -46,6 +46,9 @@ const makeRow = (node, klass) =>
 const toggleEditMode = () =>
   appState.editing = !appState.editing
 
+const nextBudget = (amt) =>
+  appState.currentBudget = Math.abs((appState.currentBudget + amt) % appState.budgets.length)
+
 const renderTitle = () =>
   yo`
     <div class='title'>
@@ -60,8 +63,8 @@ const renderTitle = () =>
         </h3>
       </div>
       <div class='right year-chooser'>
-        <button>B</button>
-        <button>F</button>
+        <button onclick=${() => nextBudget(-1)}>B</button>
+        <button onclick=${() => nextBudget(+1)}>F</button>
       </div>
     </div>
   `
