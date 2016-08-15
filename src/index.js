@@ -48,12 +48,20 @@ const toggleEditMode = () =>
 
 const renderTitle = () =>
   yo`
-    <div>
-      <button class='edit-button' onclick=${toggleEditMode}>
-        Edit
-      </button>
-      <div class='title'>
-        Budget Smuggler
+    <div class='title'>
+      <div class='left'>
+        <button class='edit-button' onclick=${toggleEditMode}>
+          Edit
+        </button>
+      </div>
+      <div class='center'>
+        <h3>
+          Budget Smuggler
+        </h3>
+      </div>
+      <div class='right year-chooser'>
+        <button>B</button>
+        <button>F</button>
       </div>
     </div>
   `
