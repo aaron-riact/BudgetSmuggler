@@ -147,6 +147,6 @@ const appComp = state => yo`<div class='container'>
 
 const ref = document.body.appendChild(document.createElement('div')); 
 
-const x = autorun(() => yo.update(ref, appComp(appState)));
 init()
+const x = autorun(() => yo.update(ref, appComp(appState)));
 //console.log('donex', x); 

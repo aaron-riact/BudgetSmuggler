@@ -58,17 +58,27 @@ const appState = observable({
 });
 
 function init() {
-  const s1 = makeNewChild(appState, 'root', 'sec 1')
-  const c1 = makeNewChild(s1, 'section', 'cat 1-1')
-  makeNewChild(c1, 'category', 'ext 1-1-1')
-  makeNewChild(c1, 'category', 'ext 1-1-2')
-  makeNewChild(c1, 'category', 'ext 1-1-3')
+  const template = require('./template.json')
+  template.farms[0].report_sections.forEach(src_sec => {
+    const sec = makeNewChild(appState, 'root', src_sec.name)
+    src_sec.categories.forEach(src_cat => {
+      const cat = makeNewChild(sec, 'section', src_cat.name)
+      src_cat.extcodes.forEach(src_ext => {
+        makeNewChild(cat, 'category', src_ext.name)
+      })
+    })
+  })
+  //const s1 = makeNewChild(appState, 'root', 'sec 1')
+  //const c1 = makeNewChild(s1, 'section', 'cat 1-1')
+  //makeNewChild(c1, 'category', 'ext 1-1-1')
+  //makeNewChild(c1, 'category', 'ext 1-1-2')
+  //makeNewChild(c1, 'category', 'ext 1-1-3')
 
-  const s2 = makeNewChild(appState, 'root', 'sec 2')
-  const c2 = makeNewChild(s2, 'section', 'cat 2-1')
-  makeNewChild(c2, 'category', 'ext 2-1-1')
-  makeNewChild(c2, 'category', 'ext 2-1-2')
-  makeNewChild(c2, 'category', 'ext 2-1-3')
+  //const s2 = makeNewChild(appState, 'root', 'sec 2')
+  //const c2 = makeNewChild(s2, 'section', 'cat 2-1')
+  //makeNewChild(c2, 'category', 'ext 2-1-1')
+  //makeNewChild(c2, 'category', 'ext 2-1-2')
+  //makeNewChild(c2, 'category', 'ext 2-1-3')
 }
 
 module.exports = {appState, makeNewChild, init, currentOffset}
