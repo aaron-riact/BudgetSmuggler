@@ -21,7 +21,7 @@ const makeNewChild = (parent, parentClass, name, e) => {
     const node = {
       name: typeof name === 'string' ? name : 'cat',
       open: true,
-      values:function() { console.log('CATN', this); return sumChildren(this.extendeds) },
+      values:function() { /*console.log('CATN', this);*/ return sumChildren(this.extendeds) },
       extendeds: []
     } 
     parent.categories.push(node);
