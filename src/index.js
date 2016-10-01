@@ -1,6 +1,7 @@
 const mobx = require('mobx')
 const {appState, makeNewChild, init, currentOffset} = require('./appState')
 const { el, list, mount, setChildren, text } = require('redom')
+const yo = require('yo-yo');
 
 const hello = el('h1', 'Hello world!');
 
@@ -41,11 +42,19 @@ class Lix {
   }
   update (data) {
     console.log('data', data)
-    this.el.replaceChild(data, this.el.firstChild)
+    yo.update(this.el.firstChild, data)
   }
 }
 const makeRow = (node, klass) => {
   const ol = list('ol', Lix)
+    ol.update(getColArray().map(month =>
+      klass === 'extended'
+        ? el('input', {
+          value: node.values[month] || 0,
+          oninput: ev => node.values[month] = parseFloat(ev.target.value) || 0 
+        })
+        : text(node.values[month] || '0')
+    ))
   mobx.autorun(() =>
     ol.update(getColArray().map(month =>
       klass === 'extended'
@@ -135,13 +144,23 @@ class TotalRow {
   }
 }
 const totalRow = new TotalRow
+const makeTotalRow = (state) => {
+  const node = document.createElement('div')
+  mobx.autorun(() => {
+    const newNode = makeNode({name: 'Total', values: state.total}, 'section total')
+    yo.update(node, newNode)
+    console.log('newNoe', newNode)
+    console.log('node', node)
+  })
+  return node
+}
 const appComp = state =>
   el('div.container',
     el('div.budget',
       renderTitle(),
       renderMonths(),
       renderTree(state.sections),
-      makeNode({name: 'Total', values: state.total}, 'section total')
+      makeTotalRow(state)
     )
   )
 
