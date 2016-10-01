@@ -32,23 +32,13 @@ const getMonthsArray = () => {
   return array
 }
 
-function cachyNode (node, month) {
-  let _node
-  autorun(() => {
-    const newNode = document.createTextNode(node.values[month] || 0)
-    _node = _node ? yo.update(_node, newNode) : newNode
-    _node.isSameNode = () => true
-  })
-  return _node
-}
-
 const makeRow = (node, klass) =>
   yo`<ol>
     ${getColArray().map(month =>
       yo`<li>
         ${klass === 'extended'
           ? yo`<input value="${node.values[month] || 0}" oninput=${ev => node.values[month] = parseFloat(ev.target.value) || 0}>`
-      		: cachyNode(node, month)
+      		: node.values[month] || 0
 				}
       </li>`
     )}
@@ -154,13 +144,12 @@ const appComp = state => yo`<div class='container'>
     ${renderTitle()}
     ${renderMonths()}
 		${renderTree(state.sections)}
-  	${makeNode({name: 'Total', get values() { return  state.total }}, 'section total')}
+  	${makeNode({name: 'Total', values: state.total}, 'section total')}
   </div>
 </div>`;
 
 const ref = document.body.appendChild(document.createElement('div')); 
 
 init()
-yo.update(ref, appComp(appState))
-// const x = autorun(() => yo.update(ref, appComp(appState)));
+const x = autorun(() => yo.update(ref, appComp(appState)));
 //console.log('donex', x); 
