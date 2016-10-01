@@ -128,20 +128,23 @@ const makeNode = (node, klass, children) =>
 const isOpen = (node) =>
   node.open || appState.editing
 
-const renderTree = sections =>
-  yo`<div class='root'>
-  	${sections.map(section =>
-      makeNode(section, 'section',
-  			isOpen(section) && section.categories.map(category =>
-      		makeNode(category, 'category',
-      			isOpen(category) && category.extendeds && category.extendeds.map(extended =>
-     				 	makeNode(extended, 'extended')
-            )
-      		)
-  			)
-      )
-  	)}
+const renderTree = sections => {
+  const temp = []
+  sections.map(section => {
+    temp.push(makeNode(section, 'section'))
+    if (isOpen(section)) {
+      section.categories.map(category => {
+        temp.push(makeNode(category, 'category'))
+        if (isOpen(category) && category.extendeds) { 
+            category.extendeds.map(extended => temp.push(makeNode(extended, 'extended')))
+        }
+      })
+    } 
+  })
+  return yo`<div class='root'>
+    ${temp}
   </div>` 
+}
 
 const inputComp = state =>
   yo`<input value="${state.name}" oninput=${ev => state.name = ev.target.value}>`
