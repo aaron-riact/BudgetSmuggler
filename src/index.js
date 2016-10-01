@@ -1,6 +1,6 @@
 const mobx = require('mobx')
 const {appState, makeNewChild, init, currentOffset} = require('./appState')
-const { el, list, mount } = require('redom')
+const { el, list, mount, setChildren, text } = require('redom')
 
 const hello = el('h1', 'Hello world!');
 
@@ -35,19 +35,29 @@ const getBudgetSize = () => appState.budgets[appState.currentBudget]
 const getColArray = () =>
   Array.from({length: getBudgetSize()}, (_, i) => i + currentOffset())
 
-const makeRow = (node, klass) =>
-  el('ol',
-    ...getColArray().map(month =>
-      el('li',
-        klass === 'extended'
-          ? el('input', {
-            value: node.values[month] || 0,
-            oninput: ev => node.values[month] = parseFloat(ev.target.value) || 0 
-          })
-          : node.values[month] || '0' 
-      )
-    )
+class Lix {
+  constructor () {
+    this.el = el('li', el('div'))
+  }
+  update (data) {
+    console.log('data', data)
+    this.el.replaceChild(data, this.el.firstChild)
+  }
+}
+const makeRow = (node, klass) => {
+  const ol = list('ol', Lix)
+  mobx.autorun(() =>
+    ol.update(getColArray().map(month =>
+      klass === 'extended'
+        ? el('input', {
+          value: node.values[month] || 0,
+          oninput: ev => node.values[month] = parseFloat(ev.target.value) || 0 
+        })
+        : text(node.values[month] || '0')
+    ))
   )
+  return ol
+}
 
 const getMonthsArray = () => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -131,7 +141,6 @@ const appComp = state =>
       renderTitle(),
       renderMonths(),
       renderTree(state.sections),
-      totalRow.update(state),
       makeNode({name: 'Total', values: state.total}, 'section total')
     )
   )
