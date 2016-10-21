@@ -134,19 +134,6 @@ class Node {
   }
 }
 
-
-const makeNode = (node, klass, children = []) =>
-  el('div', {class: klass, onclick: onClick.bind(null, node), onfocus},
-    el('div.nav',
-      appState.editingNode === node
-      ? el('input', {value: node.name, onblur: onBlur.bind(null, node)})
-      : el('span.name', node.name)
-    ),
-    renderEditButton(node, klass),
-    el('div.months', makeRow(node, klass)),
-    el('div.children', ...children)
-  )
-
 const isOpen = (node) =>
   node.open || appState.editing
 
@@ -156,32 +143,14 @@ const secs = list.extend('div', cats)
 const tree = list('div.root', Node, null, {klass: 'section'})
 window.list = list
 
-class TotalRow {
-  constructor() {
-    this.el = el('div')
-  }
-  update(state) {
-    this.el = makeNode({name: 'Total', values: state.total}, 'section total')
-  }
-}
-const totalRow = new TotalRow
-const makeTotalRow = (state) => {
-  const node = document.createElement('div')
-  mobx.autorun(() => {
-    const newNode = makeNode({name: 'Total', values: state.total}, 'section total')
-    yo.update(node, newNode)
-    console.log('newNoe', newNode)
-    console.log('node', node)
-  })
-  return node
-}
+const totalRow = new Node({klass: 'section total'}, {name: 'Total', values: appState.total})
 const appComp = state =>
   el('div.container',
     el('div.budget',
       renderTitle(),
       renderMonths(),
       tree,
-      makeTotalRow(state)
+      totalRow
     )
   )
 
@@ -190,6 +159,7 @@ console.log('appState', appState)
 const ref = document.body.appendChild(document.createElement('div')); 
 mount(ref, appComp(appState))
 tree.update(appState.sections)
+mobx.autorun(() => totalRow.update({name: 'Total', values: appState.total}))
 // autorun(() => console.log('upda'))
 //const x = autorun(() => yo.update(ref, appComp(appState)));
 /******************* TD */
