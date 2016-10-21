@@ -150,20 +150,6 @@ const makeNode = (node, klass, children = []) =>
 const isOpen = (node) =>
   node.open || appState.editing
 
-const renderTree = sections =>
-  el('div.root',
-    ...sections.map(section =>
-      makeNode(section, 'section',
-        isOpen(section) && section.categories.map(category =>
-          makeNode(category, 'category',
-            isOpen(category) && category.extendeds && category.extendeds.map(extended =>
-              makeNode(extended, 'extended')
-            )
-          )
-        )
-      )
-    )
-  )
 const cats = list.extend('div.children', Node, null, {klass: 'category'})
 const exts = list.extend('div.children', Node, null, {klass: 'extended'})
 const secs = list.extend('div', cats)
@@ -194,7 +180,7 @@ const appComp = state =>
     el('div.budget',
       renderTitle(),
       renderMonths(),
-      renderTree(state.sections),
+      tree,
       makeTotalRow(state)
     )
   )
@@ -203,6 +189,7 @@ init()
 console.log('appState', appState)
 const ref = document.body.appendChild(document.createElement('div')); 
 mount(ref, appComp(appState))
+tree.update(appState.sections)
 // autorun(() => console.log('upda'))
 //const x = autorun(() => yo.update(ref, appComp(appState)));
 /******************* TD */
