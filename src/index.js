@@ -70,7 +70,9 @@ const getMonthsArray = () => {
 
 const renderMonths = () => {
   const monthRow = new Row
-  monthRow.update(makeRow({values: getMonthsArray()}))
+  mobx.autorun(() =>
+    monthRow.update(makeRow({values: getMonthsArray()}))
+  )
   return el('div.header',
     el('div.nav',
       el('span.name', 'Months')
@@ -122,7 +124,9 @@ class Node {
   }
   update (item) {
     this.children.update(isOpen(item) ? item.categories || item.extendeds : [])
-    this.months.update(makeRow(item, this.initData.klass))
+    mobx.autorun(() =>
+      this.months.update(makeRow(item, this.initData.klass))
+    )
     console.log('update', mobx.toJS(item))
   }
 }
