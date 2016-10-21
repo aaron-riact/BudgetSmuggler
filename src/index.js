@@ -108,7 +108,9 @@ function getChildren (node, klass) {
 
 class Node {
   constructor (initData, node) {
+    this.initData = initData
     this.children = getChildren(node, initData.klass)
+    this.months = el('div.months')
     this.el = el('div', {class: initData.klass, onclick: onClick.bind(null, node)},
       el('div.nav',
         appState.editingNode === node
@@ -116,12 +118,13 @@ class Node {
         : el('span.name', node.name)
       ),
       renderEditButton(node, initData.klass),
-      el('div.months', makeRow(node, initData.klass)),
+      this.months,
       this.children
     )
   }
   update (item) {
     this.children.update(isOpen(item) ? item.categories || item.extendeds : [])
+    setChildren(this.months, [makeRow(item, this.initData.klass)])
     console.log('update', mobx.toJS(item))
   }
 }
