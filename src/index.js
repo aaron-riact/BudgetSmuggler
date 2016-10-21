@@ -105,6 +105,36 @@ const onClick = (node, ev) => {
 	node.open = !node.open
 }
 
+
+function getChildren (node, klass) {
+  if (isOpen(node)) {
+    if (klass === 'section') return new cats //node.categories.map(c => new Node({klass: 'category'}, c))
+    if (klass === 'category') return new exts //node.extendeds.map(c => new Node({klass: 'extended'}, c))
+  }
+  return {update:() => {}} //[]
+}
+
+class Node {
+  constructor (initData, node) {
+    this.children = getChildren(node, initData.klass)
+    this.el = el('div', {class: initData.klass, onclick: onClick.bind(null, node)},
+      el('div.nav',
+        appState.editingNode === node
+        ? el('input', {value: node.name, onblur: onBlur.bind(null, node)})
+        : el('span.name', node.name)
+      ),
+      renderEditButton(node, initData.klass),
+      el('div.months', makeRow(node, initData.klass)),
+      this.children
+    )
+  }
+  update (item) {
+    this.children.update(isOpen(item) ? item.categories || item.extendeds : [])
+    console.log('update', mobx.toJS(item))
+  }
+}
+
+
 const makeNode = (node, klass, children = []) =>
   el('div', {class: klass, onclick: onClick.bind(null, node), onfocus},
     el('div.nav',
@@ -134,6 +164,11 @@ const renderTree = sections =>
       )
     )
   )
+const cats = list.extend('div.children', Node, null, {klass: 'category'})
+const exts = list.extend('div.children', Node, null, {klass: 'extended'})
+const secs = list.extend('div', cats)
+const tree = list('div.root', Node, null, {klass: 'section'})
+window.list = list
 
 class TotalRow {
   constructor() {
