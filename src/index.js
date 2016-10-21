@@ -48,14 +48,14 @@ class Lix {
 const Row = list.extend('ol', Lix)
 
 const makeRow = (node, klass) => {
-  return getColArray().map(month =>
-    klass === 'extended'
-      ? el('input', {
-        value: node.values[month] || 0,
-        oninput: ev => node.values[month] = parseFloat(ev.target.value) || 0 
+  return klass === 'extended'
+    ? getColArray().map(month =>
+      el('input', {
+        value: '67' || node.values[month] || '0',
+        oninput: ev => { node.values[month] = parseFloat(ev.target.value) || 0 }
       })
-      : text(node.values[month] || '0')
-  )
+    )
+    : getColArray().map(month => text(node.values[month] || '0'))
 }
 
 const getMonthsArray = () => {
