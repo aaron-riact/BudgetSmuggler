@@ -45,19 +45,17 @@ class Lix {
     yo.update(this.el.firstChild, data)
   }
 }
+const Row = list.extend('ol', Lix)
+
 const makeRow = (node, klass) => {
-  const ol = list('ol', Lix)
-  mobx.autorun(() =>
-    ol.update(getColArray().map(month =>
-      klass === 'extended'
-        ? el('input', {
-          value: node.values[month] || 0,
-          oninput: ev => node.values[month] = parseFloat(ev.target.value) || 0 
-        })
-        : text(node.values[month] || '0')
-    ))
+  return getColArray().map(month =>
+    klass === 'extended'
+      ? el('input', {
+        value: node.values[month] || 0,
+        oninput: ev => node.values[month] = parseFloat(ev.target.value) || 0 
+      })
+      : text(node.values[month] || '0')
   )
-  return ol
 }
 
 const getMonthsArray = () => {
