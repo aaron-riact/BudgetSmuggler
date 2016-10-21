@@ -68,17 +68,17 @@ const getMonthsArray = () => {
   return array
 }
 
-const renderMonths = () =>
-  el('div.header',
+const renderMonths = () => {
+  const monthRow = new Row
+  monthRow.update(makeRow({values: getMonthsArray()}))
+  return el('div.header',
     el('div.nav',
       el('span.name', 'Months')
     ),
     renderEditButton(appState, 'root'),
-    el('div.months',
-      makeRow({values: getMonthsArray()})
-    )
+    el('div.months', monthRow)
   )
-
+}
 function onBlur (node, ev) {
   node.name = ev.target.value
   appState.editingNode = null
@@ -108,7 +108,7 @@ class Node {
   constructor (initData, node) {
     this.initData = initData
     this.children = getChildren(node, initData.klass)
-    this.months = el('div.months')
+    this.months = new Row
     this.el = el('div', {class: initData.klass, onclick: onClick.bind(null, node)},
       el('div.nav',
         appState.editingNode === node
@@ -116,13 +116,13 @@ class Node {
         : el('span.name', node.name)
       ),
       renderEditButton(node, initData.klass),
-      this.months,
+      el('div.months', this.months),
       this.children
     )
   }
   update (item) {
     this.children.update(isOpen(item) ? item.categories || item.extendeds : [])
-    setChildren(this.months, [makeRow(item, this.initData.klass)])
+    this.months.update(makeRow(item, this.initData.klass))
     console.log('update', mobx.toJS(item))
   }
 }
