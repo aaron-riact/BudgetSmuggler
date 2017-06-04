@@ -3,3 +3,12 @@ http://jsfiddle.net/constb/xur4pf6m/2/
 http://jsfiddle.net/constb/xur4pf6m/1/
 http://jsfiddle.net/m6of5fv8/
 
+
+
+actions create ACTIONS
+ACTIONS produce EVENTS (authorised by server)
+EVENTS are persisted
+EVENTS are synchronised
+EVENTS are reduced into state
+state reducion produces CUD diffs
+CUD diffs are observed by UI:x

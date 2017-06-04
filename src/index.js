@@ -2,7 +2,7 @@ const mobx = require('mobx')
 const {appState, makeNewChild, init, currentOffset} = require('./appState')
 const { el, list, mount, setChildren, text } = require('redom')
 const yo = require('yo-yo');
-
+const connect = require('mobx-redom')
 const hello = el('h1', 'Hello world!');
 
 const nextBudget = (amt) =>
@@ -36,26 +36,90 @@ const getBudgetSize = () => appState.budgets[appState.currentBudget]
 const getColArray = () =>
   Array.from({length: getBudgetSize()}, (_, i) => i + currentOffset())
 
-class Lix {
-  constructor () {
-    this.el = el('li', el('div'))
+//class Lix {
+const Lix = connect(class {
+  constructor (initData, item, idx) {
+    this.onfocus = this.onfocus.bind(this)
+    this.onblur = this.onblur.bind(this)
+    this.data = item
+    this.updatex = this.updatex.bind(this)
+    //console.log('Lix', initData, item,b,c)
+    const meta = initData.klass === 'extended'
+      ? {tabindex: 0, onfocus: this.onfocus}
+      : {}
+    // const meta = {}
+    const node = this.data.node
+    const month = this.data.month
+    const content = text(node.values[month] || '0')
+    // const content = initData.klass === 'extended'
+    //   ? el('input', {
+    //     oninput: ev => { node.values[month] = parseFloat(ev.target.value) || 0 },
+    //     value: node.values[month] || '0',
+    //     'data-value': node.values[month] || '0',
+    //     type: 'number',
+    //     tabindex: 0
+    //   })
+    //   : text(node.values[month] || '0')
+    this.el = el('li', meta, content)
+    this.initData = initData
+  }
+  onfocus (e) {
+    console.log('focus', e)
+    const node = this.data.node
+    const month = this.data.month
+    const input = el('input', {
+      oninput: ev => { node.values[month] = parseFloat(ev.target.value) || 0 },
+      value: node.values[month] || '0',
+      'data-value': node.values[month] || '0',
+      tabindex: 0,
+      onblur: this.onblur
+    })
+    this.el.tabIndex = -1
+    yo.update(this.el.firstChild, input)
+    input.focus()
+    this.editing = true
+  }
+  onblur (e) {
+    console.log('blur', e)
+    this.editing = false
+    this.updatex(this.data)
+    //this.el.focus()
   }
   update (data) {
-    console.log('data', data)
-    yo.update(this.el.firstChild, data)
+    this.updatex(data)
+  }
+  updatex (data) {
+    //console.log('data', data)
+    //const content = makeRow(data.node, data.month, this.initData.klass)
+    // console.log('update1', this.editing)
+    if (this.editing) return
+    const node = data.node
+    const month = data.month
+    //if (data.node.name == 'Total') {
+    //  console.log('lix update', data)
+    //}
+    const content = text(node.values[month] || '0')
+    // console.log('update', this.el.firstChild, content)
+    this.el.tabIndex = 0
+    yo.update(this.el.firstChild, content)
   }
 }
-const Row = list.extend('ol', Lix)
+)
+//const Row = list.extend('ol', Lix, undefined, {static: true})
+const Row = (key, initData) => list('ol', Lix, key, initData)
 
-const makeRow = (node, klass) => {
+const makeRow = (node, month, klass) => {
   return klass === 'extended'
-    ? getColArray().map(month =>
-      el('input', {
-        value: '67' || node.values[month] || '0',
-        oninput: ev => { node.values[month] = parseFloat(ev.target.value) || 0 }
+    ? el('input', {
+        oninput: ev => { node.values[month] = parseFloat(ev.target.value) || 0 },
+        value: node.values[month] || '0',
+        'data-value': node.values[month] || '0'
       })
-    )
-    : getColArray().map(month => text(node.values[month] || '0'))
+      //yo`<input
+      //  value=${node.values[month] || '0'}
+      //  oninput=${ev => { node.values[month] = parseFloat(ev.target.value) || 0 }}
+      //`)
+    : text(node.values[month] || '0')
 }
 
 const getMonthsArray = () => {
@@ -69,10 +133,11 @@ const getMonthsArray = () => {
 }
 
 const renderMonths = () => {
-  const monthRow = new Row
-  mobx.autorun(() =>
-    monthRow.update(makeRow({values: getMonthsArray()}))
-  )
+  const monthRow = Row(null, {})
+  mobx.autorun(() => {
+    const node = { values: getMonthsArray() }
+    monthRow.update(node.values.map((_, month) => Object.assign({}, {node, month})))
+  })
   return el('div.header',
     el('div.nav',
       el('span.name', 'Months')
@@ -106,15 +171,16 @@ function getChildren (node, klass) {
   return {update:() => {}} //[]
 }
 
-class Node {
+const Node = connect(class {
+//class Node {
   constructor (initData, node) {
     this.initData = initData
     this.children = getChildren(node, initData.klass)
-    this.months = new Row
+    this.months = Row(null, initData)
     this.el = el('div', {class: initData.klass, onclick: onClick.bind(null, node)},
       el('div.nav',
         appState.editingNode === node
-        ? el('input', {value: node.name, onblur: onBlur.bind(null, node)})
+        ? el('input', {value: node.name/*, onblur: onBlur.bind(null, node)*/})
         : el('span.name', node.name)
       ),
       renderEditButton(node, initData.klass),
@@ -123,13 +189,15 @@ class Node {
     )
   }
   update (item) {
+    //console.log('item', item)
     this.children.update(isOpen(item) ? item.categories || item.extendeds : [])
-    mobx.autorun(() =>
-      this.months.update(makeRow(item, this.initData.klass))
-    )
-    console.log('update', mobx.toJS(item))
+    //this.months.update(makeRow(item, this.initData.klass))
+    this.months.update(getColArray().map(month => ({month, node: item})))
+    //console.log('update', mobx.toJS(item))
+    //bordget smorgla
   }
 }
+)
 
 const isOpen = (node) =>
   node.open || appState.editing
@@ -151,12 +219,22 @@ const appComp = state =>
     )
   )
 
-init()
+mobx.transaction(() => {
+  init()
+  appState.sections[0].categories[0].extendeds[0].values[0] = 43
+  appState.sections[0].categories[0].extendeds[0].values[1] = 22
+})
+
 console.log('appState', appState)
 const ref = document.body.appendChild(document.createElement('div')); 
 mount(ref, appComp(appState))
+mobx.autorun(() => {
+  //tree.update(appState.sections)
+  console.log('autorun', mobx.toJS(appState.total))
+  totalRow.update({name: 'Total', values: appState.total})
+  //tree.update(appState.sections)
+})
 tree.update(appState.sections)
-mobx.autorun(() => totalRow.update({name: 'Total', values: appState.total}))
 // autorun(() => console.log('upda'))
 //const x = autorun(() => yo.update(ref, appComp(appState)));
 /******************* TD */
@@ -210,3 +288,4 @@ ul.update([ 1, 2, 3 ].map(i => 'Item ' + i))
 // mobx.autorun(() => table.update(z))
 
 window.z = z
+window.state = appState
