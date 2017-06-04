@@ -233,57 +233,5 @@ mobx.autorun(() => {
   //tree.update(appState.sections)
 })
 tree.update(appState.sections)
-// autorun(() => console.log('upda'))
-//const x = autorun(() => yo.update(ref, appComp(appState)));
-/******************* TD */
-class Td {
-  constructor () {
-    this.el = el('td');
-    console.log('td cons')
-  }
-  update (data) {
-    mobx.autorun(() => {
-      this.el.textContent = data.a;
-      //console.log('td upda', data)
-      //console.dir(data)
-    })
-  }
-}
 
-const Tr = list.extend('tr', Td);
-const Table = list.extend('table', Tr);
-
-const table = new Table;
-
-mount(document.body, table);
-
-table.update([
-  [ {a: 1}, {a: 2}, {a: 3} ],
-  [ {a: 4}, {a: 5}, {a: 6} ],
-  [ {a: 7}, {a: 8}, {a: 9} ]
-]);
-
-const z = mobx.observable([
-  [ {a: 1}, {a: 2}, {a: 3} ],
-  [ {a: 4}, {a: 5}, {a: 6} ],
-  [ {a: 7}, {a: 8}, {a: 9} ]
-])
-
-table.update(z)
-console.log('z', z)
-/**************** Li */
-class Li {
-  constructor () {
-    this.el = el('li')
-  }
-  update (data) {
-    this.el.textContent = data
-  }
-}
-var ul = list('ul', Li)
-mount(document.body, ul)
-ul.update([ 1, 2, 3 ].map(i => 'Item ' + i))
-// mobx.autorun(() => table.update(z))
-
-window.z = z
 window.state = appState
