@@ -3,12 +3,10 @@ const {appState, makeNewChild, init, currentOffset} = require('./appState')
 const { el, list, mount, setChildren, text } = require('redom')
 const yo = require('yo-yo');
 const connect = require('mobx-redom')
-const hello = el('h1', 'Hello world!');
 
 const nextBudget = (amt) =>
   appState.currentBudget = Math.abs((appState.currentBudget + amt) % appState.budgets.length)
 
-mount(document.body, hello);
 const renderTitle = () =>
   el('div.title',
     el('div.left',
