@@ -1183,17 +1183,17 @@
             }
           ],
           "id": "3620cc9-29aa-49cf-b289-78b78c803759",
-          "name": "FARM EXPENDITURE"
+          "name": "Farm Expenditure"
         },
         {
           "categories": [],
           "id": "5e35d53d-4bc3-4227-9dc7-87b08f1fbb04",
-          "name": "FARM SURPLUS"
+          "name": "Farm Surplus"
         },
         {
           "categories": [],
           "id": "6f3dba81-ce61-4291-894c-799dddd9ef71",
-          "name": "FIN YEAR SURPLUS"
+          "name": "Fin Year Surplus"
         },
         {
           "categories": [
@@ -1620,7 +1620,7 @@
             }
           ],
           "id": "b0cf280b-46fb-4767-99e3-67d883db21eb",
-          "name": "INCOME"
+          "name": "Income"
         },
         {
           "categories": [
@@ -1704,17 +1704,17 @@
             }
           ],
           "id": "b2b3195b-9aff-4f73-946f-da9f4f03f62b",
-          "name": "INTEREST & RENT"
+          "name": "Interest & Rent"
         },
         {
           "categories": [],
           "id": "97583b7d-bdea-4315-9efd-93be3862d64a",
-          "name": "NET INCOME"
+          "name": "Net Income"
         },
         {
           "categories": [],
           "id": "394ce647-a1e1-407e-8cba-a87f27772a26",
-          "name": "OPERATING SURPLUS"
+          "name": "Operating Surplus"
         },
         {
           "categories": [
@@ -2024,7 +2024,7 @@
             }
           ],
           "id": "5bbad7c7-b4ad-41a9-a33e-1ef6e0dc4f40",
-          "name": "OTHER"
+          "name": "Other"
         },
         {
           "categories": [
@@ -2308,7 +2308,7 @@
             }
           ],
           "id": "045c10d0-9031-431c-993e-f945040e4615",
-          "name": "PURCHASES"
+          "name": "Purchases"
         }
       ],
       "template_country_code": "nzl",
@@ -3490,17 +3490,17 @@
             }
           ],
           "id": "1ba7f725-9b69-4cdb-a6c1-bf18b83d1985",
-          "name": "FARM EXPENDITURE"
+          "name": "Farm Expenditure"
         },
         {
           "categories": [],
           "id": "46642576-f8f1-4ebc-80fa-67c47e7459c1",
-          "name": "FARM SURPLUS"
+          "name": "Farm Surplus"
         },
         {
           "categories": [],
           "id": "a447a47c-890f-49ea-b28e-58d5d706def4",
-          "name": "FIN YEAR SURPLUS"
+          "name": "Fin Year Surplus"
         },
         {
           "categories": [
@@ -3927,7 +3927,7 @@
             }
           ],
           "id": "b5090b3d-34c0-47d0-be3e-403f7e3cb367",
-          "name": "INCOME"
+          "name": "Income"
         },
         {
           "categories": [
@@ -4011,17 +4011,17 @@
             }
           ],
           "id": "309ce936-6f7b-47ea-a7b6-77e372b52d6e",
-          "name": "INTEREST & RENT"
+          "name": "Interest & Rent"
         },
         {
           "categories": [],
           "id": "5f04c039-baed-4ebc-ac9e-c9a62e44855e",
-          "name": "NET INCOME"
+          "name": "Net Income"
         },
         {
           "categories": [],
           "id": "002babcf-447c-470f-a7c3-4155767bc9c4",
-          "name": "OPERATING SURPLUS"
+          "name": "Operating Surplus"
         },
         {
           "categories": [
@@ -4331,7 +4331,7 @@
             }
           ],
           "id": "d5ec5a1f-bfc3-4b44-8b3b-f63b4435dea2",
-          "name": "OTHER"
+          "name": "Other"
         },
         {
           "categories": [
@@ -4615,7 +4615,7 @@
             }
           ],
           "id": "a6163573-386b-4f7e-b1bd-a7673ac20cd7",
-          "name": "PURCHASES"
+          "name": "Purchases"
         }
       ],
       "template_country_code": "nzl",
@@ -5728,17 +5728,17 @@
             }
           ],
           "id": "a9b7e2c1-30d6-4abd-b7be-972cf86b18e5",
-          "name": "FARM EXPENDITURE"
+          "name": "Farm Expenditure"
         },
         {
           "categories": [],
           "id": "ef3ca28e-1abc-423c-8ba8-5caf7ff18c95",
-          "name": "FARM SURPLUS"
+          "name": "Farm Surplus"
         },
         {
           "categories": [],
           "id": "535e39ef-bfe5-4c52-adbe-987bfeab323a",
-          "name": "FIN YEAR SURPLUS"
+          "name": "Fin Year Surplus"
         },
         {
           "categories": [
@@ -5967,7 +5967,7 @@
             }
           ],
           "id": "177d2a8b-385c-4fe4-b33c-695fd3282894",
-          "name": "INCOME"
+          "name": "Income"
         },
         {
           "categories": [
@@ -6056,12 +6056,12 @@
         {
           "categories": [],
           "id": "1f91dd57-2a0d-4527-bf6d-436bf5585826",
-          "name": "NET INCOME"
+          "name": "Net Income"
         },
         {
           "categories": [],
           "id": "a0c6d5ae-ff6a-4c2e-970d-2e8da4013b6c",
-          "name": "OPERATING SURPLUS"
+          "name": "Operating Surplus"
         },
         {
           "categories": [
@@ -6371,7 +6371,7 @@
             }
           ],
           "id": "38d1399f-6fee-4f86-882b-c81bbff5b602",
-          "name": "OTHER"
+          "name": "Other"
         },
         {
           "categories": [
@@ -6536,7 +6536,7 @@
             }
           ],
           "id": "774261d2-e050-4e93-ab58-8c636a0a6e1b",
-          "name": "PURCHASES"
+          "name": "Purchases"
         }
       ],
       "template_country_code": "nzl",
