@@ -4,8 +4,9 @@
   "description": "smuggle your budget",
   "main": "index.js",
   "scripts": {
-    "serve": "beefy src/index.js:index.js --live --cwd src",
-    "build": "browserify index.js --debug -p [minifyify --map bundle.js.map --output build/bundle.js.map] > build/bundle.js",
+    "build": "esbuild src/index.js --bundle --outfile=src/bundle.js --sourcemap --define:global=globalThis",
+    "serve": "serve src -l 9967 --no-port-switching",
+    "dev": "esbuild src/index.js --bundle --outfile=src/bundle.js --sourcemap --watch --define:global=globalThis & serve src -l 9967 --no-port-switching",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -24,11 +25,10 @@
   "homepage": "https://github.com/krisl/BudgetSmuggler#readme",
   "dependencies": {
     "mobx": "^2.6.0",
-    "nod": "file:///Users/aaronlipinski/Development/aaron/nod",
     "yo-yo": "^1.3.0"
   },
   "devDependencies": {
-    "beefy": "^2.1.8",
-    "minifyify": "^7.3.3"
+    "esbuild": "^0.28.1",
+    "serve": "^14.2.6"
   }
 }

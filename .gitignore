@@ -35,3 +35,5 @@ jspm_packages
 
 # build output
 build
+src/bundle.js
+src/bundle.js.map
