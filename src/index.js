@@ -18,50 +18,47 @@ const onFocus = (node, ev) => {
 }
 
 var range = (start, end) => [...Array(end - start + 1)].map((_, i) => start + i);
+const COL_WIDTH = 50
+const SLIDE_STEP = 12
 const getBudgetSize = () => appState.viewSize
+const getRenderArray = () => {
+  const base = appState.slideDir === -1
+    ? Math.max(0, currentOffset() - SLIDE_STEP)
+    : currentOffset()
+  return Array.from({length: getBudgetSize() + SLIDE_STEP}, (_, i) => i + base)
+}
 const getColArray = () =>
   Array.from({length: getBudgetSize()}, (_, i) => i + currentOffset())
 
-const getMonthsArray = () => {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  return Array.from({length: appState.totalMonths},
-    (_, i) => months[(i + appState.startMonth) % 12]
-  )
-}
-
-const getYearsArray = () => {
-  const offset = currentOffset()
-  const size = getBudgetSize()
-  const rows = []
-  let lastYear = null
-  for (let i = 0; i < size; i++) {
-    const col = offset + i
-    const year = appState.baseYear + Math.floor((col + appState.startMonth) / 12)
-    rows.push(year !== lastYear ? String(year) : '')
-    lastYear = year
-  }
-  return rows
-}
-
-const makeRow = (node, klass) =>
-  yo`<ol>
-    ${getColArray().map(month =>
-      yo`<li>
+const makeRow = (node, klass) => {
+  const slideCls = appState.slideDir ? (appState.slideDir === 1 ? 'slide-f' : 'slide-b') : ''
+  return yo`
+  <ol class='${slideCls}'>
+    ${getRenderArray().map(i => yo`
+      <li>
         ${klass === 'extended'
-          ? yo`<input value="${node.values[month] || 0}" oninput=${ev => node.values[month] = parseFloat(ev.target.value) || 0}>`
-      		: node.values[month] || 0
-				}
-      </li>`
-    )}
+          ? yo`<input value="${node.values[i] || 0}" oninput=${ev => node.values[i] = parseFloat(ev.target.value) || 0}>`
+          : node.values[i] || 0
+        }
+      </li>
+    `)}
   </ol>`
+}
         
 const toggleEditMode = () =>
   appState.editing = !appState.editing
 
 const nextBudget = (amt) => {
-  const step = 12
+  if (appState.slideDir) return
   const maxOffset = appState.totalMonths - getBudgetSize()
-  appState.scrollOffset = Math.max(0, Math.min(appState.scrollOffset + amt * step, maxOffset))
+  const oldOffset = appState.scrollOffset
+  const newOffset = Math.max(0, Math.min(oldOffset + amt * SLIDE_STEP, maxOffset))
+  if (oldOffset === newOffset) return
+  appState.slideDir = amt
+  setTimeout(() => {
+    appState.scrollOffset = newOffset
+    appState.slideDir = 0
+  }, 350)
 }
 
 const renderTitle = () =>
@@ -95,31 +92,38 @@ const renderEditButton = (root, rootClass) => {
   ` : ''
 }
 
-const renderMonths = () =>
-  yo`<div>
+const renderMonths = () => {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  const cols = getRenderArray()
+  const slideCls = appState.slideDir ? (appState.slideDir === 1 ? 'slide-f' : 'slide-b') : ''
+
+  const years = []
+  let lastYear = null
+  for (let i = 0; i < cols.length; i++) {
+    const col = cols[i]
+    const year = appState.baseYear + Math.floor((col + appState.startMonth) / 12)
+    years.push(year !== lastYear ? String(year) : '')
+    lastYear = year
+  }
+
+  const monthLabels = cols.map(col => months[(col + appState.startMonth) % 12])
+
+  return yo`<div>
     <div class='header'>
-      <div class='nav'>
-        <span class='name'>Year</span>
-      </div>
+      <div class='nav'><span class='name'>Year</span></div>
       <div class='months'>
-        <ol>
-          ${getYearsArray().map(y =>
-            y ? yo`<li class='year-label'>${y}</li>` : yo`<li></li>`
-          )}
-        </ol>
+        <ol class='${slideCls}'>${years.map(y => y ? yo`<li class='year-label'>${y}</li>` : yo`<li></li>`)}</ol>
       </div>
     </div>
     <div class='header'>
-      <div class='nav'>
-        <span class='name'>Months</span>
-      </div>
+      <div class='nav'><span class='name'>Months</span></div>
       ${renderEditButton(appState, 'root')}
       <div class='months'>
-        ${makeRow({values: getMonthsArray()})}
+        <ol class='${slideCls}'>${monthLabels.map(m => yo`<li>${m}</li>`)}</ol>
       </div>
     </div>
-  </div>
-  ` 
+  </div>`
+  } 
 
 function onBlur (node, ev) {
   node.name = ev.target.value

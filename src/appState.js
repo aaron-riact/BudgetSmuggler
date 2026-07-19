@@ -51,6 +51,7 @@ const appState = observable({
   totalMonths: 120,
   viewSize: 15,
   scrollOffset: 0,
+  slideDir: 0,
   editing: false,
   editingNode: null,
   total: function() { console.log('TOT'); return sumChildren(this.sections) },
