@@ -21,7 +21,7 @@ const makeNewChild = (parent, parentClass, name, e) => {
     const node = {
       name: typeof name === 'string' ? name : 'cat',
       open: true,
-      values:function() { /*console.log('CATN', this);*/ return sumChildren(this.extendeds) },
+      values:function() { return sumChildren(this.extendeds) },
       extendeds: []
     } 
     parent.categories.push(node);
@@ -31,7 +31,7 @@ const makeNewChild = (parent, parentClass, name, e) => {
     const node = {
       name: typeof name === 'string' ? name : 'sec',
       open: true,
-      values: function() { console.log('ZZ'); return  sumChildren(this.categories) },
+      values: function() { return sumChildren(this.categories) },
       categories: []
     }
     parent.sections.push(node)
@@ -48,32 +48,50 @@ const appState = observable({
   totalMonths: 120,
   editing: false,
   editingNode: null,
-  total: function() { console.log('TOT'); return sumChildren(this.sections) },
+      total: function() { return sumChildren(this.sections) },
   sections: []
 });
 
-const randomVal = () => Math.round(Math.random() * 500 + 50)
-const makeValues = () => Array.from({ length: monthsWidth() }, () => randomVal())
+const noise = (amount) => Math.round((Math.random() - 0.5) * 2 * amount)
+const trended = (base, deltas) =>
+  Array.from({ length: monthsWidth() }, (_, i) =>
+    Math.max(0, Math.round(base + deltas.reduce((s, d) => s + (typeof d === 'function' ? d(i) : d), 0)))
+  )
 
 function init() {
   const data = [
     { name: 'Income', categories: [
-      { name: 'Wages', extendeds: ['Main Job', 'Side Gig'] },
-      { name: 'Investments', extendeds: ['Dividends', 'Interest'] },
+      { name: 'Wages', extendeds: [
+        ['Main Job',  trended(4000, [i => Math.floor(i / 12) * 200, i => noise(100)])],
+        ['Side Gig',  trended(500,  [i => 150 * Math.sin(2 * Math.PI * (i - 5) / 12), i => noise(50)])],
+      ]},
+      { name: 'Investments', extendeds: [
+        ['Dividends', trended(200,  [i => i % 3 === 2 ? 300 : 0, i => noise(30)])],
+        ['Interest',  trended(100,  [i => -i * 0.5, i => noise(20)])],
+      ]},
     ]},
     { name: 'Expenses', categories: [
-      { name: 'Housing', extendeds: ['Rent', 'Utilities'] },
-      { name: 'Food', extendeds: ['Groceries', 'Dining Out'] },
-      { name: 'Transport', extendeds: ['Fuel', 'Insurance'] },
+      { name: 'Housing', extendeds: [
+        ['Rent',      trended(1200, [i => Math.floor(i / 12) * 50, i => noise(30)])],
+        ['Utilities', trended(150,  [i => 80 * Math.sin(2 * Math.PI * (i + 3) / 12), i => noise(20)])],
+      ]},
+      { name: 'Food', extendeds: [
+        ['Groceries', trended(600,  [i => Math.floor(i / 12) * 20, i => noise(40)])],
+        ['Dining Out',trended(200,  [i => i * 1.5, i => noise(30)])],
+      ]},
+      { name: 'Transport', extendeds: [
+        ['Fuel',      trended(180,  [i => i * 0.8, i => 30 * Math.sin(2 * Math.PI * i / 6), i => noise(40)])],
+        ['Insurance', trended(100,  [i => Math.floor(i / 12) * 30, i => noise(10)])],
+      ]},
     ]},
   ]
   data.forEach(({name, categories}) => {
     const sec = makeNewChild(appState, 'root', name)
     categories.forEach(({name, extendeds}) => {
       const cat = makeNewChild(sec, 'section', name)
-      extendeds.forEach(name => {
+      extendeds.forEach(([name, values]) => {
         const ext = makeNewChild(cat, 'category', name)
-        ext.values = makeValues()
+        ext.values = values
       })
     })
   })
