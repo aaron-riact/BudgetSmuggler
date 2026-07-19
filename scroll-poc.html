@@ -45,55 +45,63 @@
     }
     .controls button:hover { background: rgba(255,255,255,.5); }
 
-    /* ---- scroll container ---- */
-    .scroll-wrap {
-      overflow-x: auto;
-      overflow-y: visible;
-      scroll-snap-type: x proximity;
-      scroll-behavior: smooth;
+    /* ---- body: fixed nav col + scrollable data col ---- */
+    .table-body {
+      display: flex;
       border: 1px solid rgba(255,255,255,.1);
       border-radius: 4px;
     }
-    .scroll-wrap::-webkit-scrollbar { height: 6px; }
-    .scroll-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 3px; }
 
-    /* ---- rows ---- */
-    .row {
-      display: flex;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-      min-height: 28px;
-      line-height: 28px;
-    }
-    .row:last-child { border-bottom: none; }
-    .row.header { color: rgba(255,255,255,.35); }
-
-    .nav {
-      position: sticky;
-      left: 0;
-      z-index: 2;
-      width: 170px;
+    /* ---- fixed nav column ---- */
+    .nav-col {
+      flex: 0 0 170px;
       min-width: 170px;
-      background: #354b60;
+    }
+    .nav-row {
+      height: 28px;
+      line-height: 28px;
       padding: 0 8px;
       font-size: 13px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-    }
-    .row.header .nav { background: #354b60; }
-    .row:not(.header) .nav {
+      border-bottom: 1px solid rgba(255,255,255,.08);
       border-right: 1px solid rgba(255,255,255,.1);
     }
-    .indent-cat .nav { padding-left: 20px; }
-    .indent-ext .nav { padding-left: 34px; }
+    .nav-col .nav-row:last-child { border-bottom: none; }
+    .nav-row.header { color: rgba(255,255,255,.35); font-size: 12px; }
+    .nav-row.indent-cat { padding-left: 20px; }
+    .nav-row.indent-ext { padding-left: 34px; }
+
+    /* ---- scrollable data column ---- */
+    .scroll-wrap {
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      scroll-padding-left: 0px;
+      scroll-behavior: smooth;
+    }
+    .scroll-wrap::-webkit-scrollbar { height: 6px; }
+    .scroll-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 3px; }
+
+    .data-row {
+      display: flex;
+      height: 28px;
+      line-height: 28px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .data-row:last-child { border-bottom: none; }
+    .data-row.header { color: rgba(255,255,255,.35); }
 
     ol {
       display: flex;
       margin: 0;
       padding: 0;
       list-style: none;
+      flex-shrink: 0;
     }
     li {
+      flex-shrink: 0;
       width: 40px;
       min-width: 40px;
       margin: 0 5px;
@@ -125,21 +133,16 @@
       <button onclick='scrollStep(1)'>F</button>
     </div>
   </div>
-  <div class='scroll-wrap' id='scrollWrap'>
-    <!-- year row -->
-    <div class='row header' id='yearRow'></div>
-    <!-- month row -->
-    <div class='row header' id='monthRow'></div>
-    <!-- data rows injected here -->
-    <div id='dataRows'></div>
+  <div class='table-body'>
+    <div class='nav-col' id='navCol'></div>
+    <div class='scroll-wrap' id='scrollWrap'></div>
   </div>
 </div>
 
 <script>
-const TOTAL = 120  // total data columns
-const PAGE = 15     // columns visible at once
-const STEP = 12     // columns per scroll
-const COL_W = 50    // 40px li + 2*5px margin
+const TOTAL = 120
+const STEP = 12
+const COL_W = 50
 
 const scrollStep = (dir) => {
   const el = document.getElementById('scrollWrap')
@@ -153,8 +156,8 @@ const startMonth = 0
 const colToYear = (col) => baseYear + Math.floor((col + startMonth) / 12)
 
 const rows = [
-  { name: 'Income', depth: 0, open: true },
-  { name: '  Wages', depth: 1, open: true },
+  { name: 'Income', depth: 0 },
+  { name: '  Wages', depth: 1 },
   { name: '      Main Job', depth: 2 },
   { name: '      Side Gig', depth: 2 },
   { name: '  Investments', depth: 1 },
@@ -175,43 +178,51 @@ const rows = [
 const randomVal = () => Math.round(Math.random() * 500 + 50)
 const makeValues = () => Array.from({ length: TOTAL }, () => randomVal())
 
-const totalValues = makeValues()
+const cellsLi = (values) =>
+  values.map(v => `<li>${v}</li>`).join('')
 
-const cellsHTML = (values) =>
-  values.map((v, i) => `<li data-col='${i}'>${v}</li>`).join('')
+// ---- build nav column ----
+const navEl = document.getElementById('navCol')
+let navHTML = ''
+navHTML += `<div class='nav-row header'>Year</div>`
+navHTML += `<div class='nav-row header'>Months</div>`
+rows.forEach(r => {
+  const cls = r.depth === 0 ? '' : r.depth === 1 ? 'indent-cat' : 'indent-ext'
+  navHTML += `<div class='nav-row ${cls}'>${r.name}</div>`
+})
+navHTML += `<div class='nav-row' style='border-top:1px solid rgba(255,255,255,.1)'>Total</div>`
+navEl.innerHTML = navHTML
 
-const rowHTML = (row, values) => {
-  const cls = row.depth === 0 ? '' : row.depth === 1 ? 'indent-cat' : 'indent-ext'
-  return `<div class='row ${cls}'><div class='nav'>${row.name}</div><ol>${cellsHTML(values)}</ol></div>`
-}
+// ---- build scrollable data column ----
+const dataEl = document.getElementById('scrollWrap')
+let dataHTML = ''
 
-// Year headers
-const yearCells = []
+// Year row
+let yearCells = []
 let lastYear = null
 for (let i = 0; i < TOTAL; i++) {
   const y = colToYear(i)
-  if (y !== lastYear) {
-    yearCells.push(`<li class='year-label' data-col='${i}'>${y}</li>`)
-  } else {
-    yearCells.push(`<li data-col='${i}'></li>`)
-  }
+  yearCells.push(y !== lastYear ? `<li class='year-label'>${y}</li>` : `<li></li>`)
   lastYear = y
 }
-document.getElementById('yearRow').innerHTML = `<div class='nav'>Year</div><ol>${yearCells.join('')}</ol>`
+dataHTML += `<div class='data-row header'><ol>${yearCells.join('')}</ol></div>`
 
-// Month headers
+// Month row
 const monthCells = Array.from({ length: TOTAL }, (_, i) =>
-  `<li data-col='${i}'>${months[(i + startMonth) % 12]}</li>`
+  `<li>${months[(i + startMonth) % 12]}</li>`
 )
-document.getElementById('monthRow').innerHTML = `<div class='nav'>Months</div><ol>${monthCells.join('')}</ol>`
+dataHTML += `<div class='data-row header'><ol>${monthCells.join('')}</ol></div>`
 
 // Data rows
-const dataContainer = document.getElementById('dataRows')
-dataContainer.innerHTML = rows.map(r => rowHTML(r, makeValues())).join('')
+rows.forEach(r => {
+  dataHTML += `<div class='data-row'><ol>${cellsLi(makeValues())}</ol></div>`
+})
 
-// total row
-dataContainer.innerHTML +=
-  `<div class='row'><div class='nav' style='border-top:1px solid rgba(255,255,255,.1)'>Total</div><ol>${cellsHTML(totalValues)}</ol></div>`
+// Total row
+const totalValues = makeValues()
+dataHTML += `<div class='data-row' style='border-top:1px solid rgba(255,255,255,.1)'><ol>${cellsLi(totalValues)}</ol></div>`
+
+dataEl.innerHTML = dataHTML
 </script>
 </body>
 </html>
