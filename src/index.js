@@ -18,18 +18,15 @@ const onFocus = (node, ev) => {
 }
 
 var range = (start, end) => [...Array(end - start + 1)].map((_, i) => start + i);
-const getBudgetSize = () => appState.budgets[appState.currentBudget]
+const getBudgetSize = () => appState.viewSize
 const getColArray = () =>
   Array.from({length: getBudgetSize()}, (_, i) => i + currentOffset())
 
 const getMonthsArray = () => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-  const budgetSize = getBudgetSize()
-  const array = Array.from({length: getBudgetSize() + currentOffset()},
+  return Array.from({length: appState.totalMonths},
     (_, i) => months[(i + appState.startMonth) % 12]
   )
-  console.log('array', array)
-  return array
 }
 
 const makeRow = (node, klass) =>
@@ -47,8 +44,12 @@ const makeRow = (node, klass) =>
 const toggleEditMode = () =>
   appState.editing = !appState.editing
 
-const nextBudget = (amt) =>
-  appState.currentBudget = Math.abs((appState.currentBudget + amt) % appState.budgets.length)
+const nextBudget = (amt) => {
+  const step = 12
+  const maxOffset = appState.totalMonths - getBudgetSize()
+  const next = appState.scrollOffset + amt * step
+  appState.scrollOffset = next > maxOffset ? 0 : next < 0 ? maxOffset : next
+}
 
 const renderTitle = () =>
   yo`

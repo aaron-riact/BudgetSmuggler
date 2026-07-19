@@ -40,17 +40,16 @@ const makeNewChild = (parent, parentClass, name, e) => {
 }
 
 const monthsWidth = () =>
-  appState.budgets.reduce((a, b) => a + b, 0)
+  appState.totalMonths
 
 const currentOffset = () =>
-  appState.budgets
-    .slice(0, appState.currentBudget)
-    .reduce((a, b) => a + b, 0)
+  appState.scrollOffset
 
 const appState = observable({
   startMonth: 0,
-  budgets: [15, 12],
-  currentBudget: 0,
+  totalMonths: 27,
+  viewSize: 15,
+  scrollOffset: 0,
   editing: false,
   editingNode: null,
   total: function() { console.log('TOT'); return sumChildren(this.sections) },
