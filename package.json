@@ -28,6 +28,7 @@
     "yo-yo": "^1.3.0"
   },
   "devDependencies": {
+    "beefy": "^2.1.8",
     "minifyify": "^7.3.3"
   }
 }
