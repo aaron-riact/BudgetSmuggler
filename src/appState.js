@@ -52,28 +52,31 @@ const appState = observable({
   sections: []
 });
 
+const randomVal = () => Math.round(Math.random() * 500 + 50)
+const makeValues = () => Array.from({ length: monthsWidth() }, () => randomVal())
+
 function init() {
-  const template = require('./template.json')
-  template.farms[0].report_sections.forEach(src_sec => {
-    const sec = makeNewChild(appState, 'root', src_sec.name)
-    src_sec.categories.forEach(src_cat => {
-      const cat = makeNewChild(sec, 'section', src_cat.name)
-      src_cat.extcodes.forEach(src_ext => {
-        makeNewChild(cat, 'category', src_ext.name)
+  const data = [
+    { name: 'Income', categories: [
+      { name: 'Wages', extendeds: ['Main Job', 'Side Gig'] },
+      { name: 'Investments', extendeds: ['Dividends', 'Interest'] },
+    ]},
+    { name: 'Expenses', categories: [
+      { name: 'Housing', extendeds: ['Rent', 'Utilities'] },
+      { name: 'Food', extendeds: ['Groceries', 'Dining Out'] },
+      { name: 'Transport', extendeds: ['Fuel', 'Insurance'] },
+    ]},
+  ]
+  data.forEach(({name, categories}) => {
+    const sec = makeNewChild(appState, 'root', name)
+    categories.forEach(({name, extendeds}) => {
+      const cat = makeNewChild(sec, 'section', name)
+      extendeds.forEach(name => {
+        const ext = makeNewChild(cat, 'category', name)
+        ext.values = makeValues()
       })
     })
   })
-  //const s1 = makeNewChild(appState, 'root', 'sec 1')
-  //const c1 = makeNewChild(s1, 'section', 'cat 1-1')
-  //makeNewChild(c1, 'category', 'ext 1-1-1')
-  //makeNewChild(c1, 'category', 'ext 1-1-2')
-  //makeNewChild(c1, 'category', 'ext 1-1-3')
-
-  //const s2 = makeNewChild(appState, 'root', 'sec 2')
-  //const c2 = makeNewChild(s2, 'section', 'cat 2-1')
-  //makeNewChild(c2, 'category', 'ext 2-1-1')
-  //makeNewChild(c2, 'category', 'ext 2-1-2')
-  //makeNewChild(c2, 'category', 'ext 2-1-3')
 }
 
 module.exports = {appState, makeNewChild, init}
