@@ -62,26 +62,26 @@ function init() {
   const data = [
     { name: 'Income', categories: [
       { name: 'Wages', extendeds: [
-        ['Main Job',  trended(4000, [i => Math.floor(i / 12) * 200, i => noise(100)])],
-        ['Side Gig',  trended(500,  [i => 150 * Math.sin(2 * Math.PI * (i - 5) / 12), i => noise(50)])],
+        ['Main Job',  trended(4000, [i => Math.floor(i / 12) * 200, i => noise(20)])],
+        ['Side Gig',  trended(500,  [i => 150 * Math.sin(2 * Math.PI * (i - 5) / 12), i => noise(30)])],
       ]},
       { name: 'Investments', extendeds: [
-        ['Dividends', trended(200,  [i => i % 3 === 2 ? 300 : 0, i => noise(30)])],
-        ['Interest',  trended(100,  [i => -i * 0.5, i => noise(20)])],
+        ['Dividends', trended(200,  [i => i % 3 === 2 ? 300 : 0, i => noise(15)])],
+        ['Interest',  trended(100,  [i => -i * 0.5, i => noise(5)])],
       ]},
     ]},
     { name: 'Expenses', categories: [
       { name: 'Housing', extendeds: [
-        ['Rent',      trended(1200, [i => Math.floor(i / 12) * 50, i => noise(30)])],
-        ['Utilities', trended(150,  [i => 80 * Math.sin(2 * Math.PI * (i + 3) / 12), i => noise(20)])],
+        ['Rent',      trended(1200, [i => Math.floor(i / 12) * 50, i => noise(15)])],
+        ['Utilities', trended(150,  [i => 70 * Math.sin(2 * Math.PI * (i + 2) / 12), i => noise(10)])],
       ]},
       { name: 'Food', extendeds: [
-        ['Groceries', trended(600,  [i => Math.floor(i / 12) * 20, i => noise(40)])],
-        ['Dining Out',trended(200,  [i => i * 1.5, i => noise(30)])],
+        ['Groceries', trended(600, [i => 80 * Math.sin(2 * Math.PI * (i - 1) / 12), i => Math.floor(i / 12) * 15, i => noise(15)])],
+        ['Dining Out',trended(200, [i => 50 * Math.sin(2 * Math.PI * (i - 5) / 12), i => Math.floor(i / 12) * 10, i => noise(12)])],
       ]},
       { name: 'Transport', extendeds: [
-        ['Fuel',      trended(180,  [i => i * 0.8, i => 30 * Math.sin(2 * Math.PI * i / 6), i => noise(40)])],
-        ['Insurance', trended(100,  [i => Math.floor(i / 12) * 30, i => noise(10)])],
+        ['Fuel',      trended(180,  [i => i * 0.8, i => 30 * Math.sin(2 * Math.PI * i / 6), i => noise(20)])],
+        ['Insurance', trended(100,  [i => Math.floor(i / 12) * 30, i => noise(8)])],
       ]},
     ]},
   ]
