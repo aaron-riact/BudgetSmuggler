@@ -30,41 +30,31 @@
       justify-content: space-between;
       height: 46px;
     }
-    .title h3 { margin: 0; font-size: 24px; }
+    .title h3 { margin: 0; font-size: 20px; }
     .controls { display: flex; gap: 8px; }
     .controls button {
       background: rgba(255,255,255,.3);
       border: none;
       border-radius: 8px;
-      height: 30px;
-      width: 30px;
+      height: 28px;
+      width: 28px;
       color: #fff;
       font-weight: bold;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 14px;
     }
     .controls button:hover { background: rgba(255,255,255,.5); }
 
-    /* ---- body: fixed nav col + scrollable data col ---- */
-    .table-body {
-      display: flex;
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 4px;
-    }
+    /* ---- body: nav + scroll + stats ---- */
+    .table-body { display: flex; }
 
-    /* ---- fixed nav column ---- */
-    .nav-col {
-      flex: 0 0 170px;
-      min-width: 170px;
-    }
+    /* ---- nav column ---- */
+    .nav-col { flex: 0 0 170px; min-width: 170px; }
     .nav-row {
-      height: 28px;
-      line-height: 28px;
+      height: 28px; line-height: 28px;
       padding: 0 8px;
       font-size: 13px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       border-bottom: 1px solid rgba(255,255,255,.08);
       border-right: 1px solid rgba(255,255,255,.1);
     }
@@ -73,10 +63,11 @@
     .nav-row.indent-cat { padding-left: 20px; }
     .nav-row.indent-ext { padding-left: 34px; }
 
-    /* ---- scrollable data column ---- */
+    /* ---- scrollable data ---- */
     .scroll-wrap {
-      overflow-x: auto;
-      overflow-y: hidden;
+      min-width: 0;
+      flex: 1 1 auto;
+      overflow-x: auto; overflow-y: hidden;
       scroll-snap-type: x mandatory;
       scroll-padding-left: 0px;
       scroll-behavior: smooth;
@@ -86,40 +77,72 @@
 
     .data-row {
       display: flex;
-      height: 28px;
-      line-height: 28px;
+      height: 28px; line-height: 28px;
       border-bottom: 1px solid rgba(255,255,255,.08);
     }
     .data-row:last-child { border-bottom: none; }
     .data-row.header { color: rgba(255,255,255,.35); }
 
-    ol {
-      display: flex;
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      flex-shrink: 0;
-    }
+    ol { display: flex; margin: 0; padding: 0; list-style: none; flex-shrink: 0; }
     li {
       flex-shrink: 0;
-      width: 40px;
-      min-width: 40px;
+      width: 40px; min-width: 40px;
       margin: 0 5px;
-      text-align: right;
-      padding: 0 2px;
+      text-align: right; padding: 0 2px;
       font-size: 12px;
       scroll-snap-align: start;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: clip;
+      white-space: nowrap; overflow: hidden; text-overflow: clip;
     }
-    .header li {
-      text-align: center;
+    .header li { text-align: center; font-size: 11px; }
+    .header .year-label { font-size: 12px; color: rgba(255,255,255,.5); }
+
+    /* ---- stats column ---- */
+    .stats-col { flex: 0 0 180px; min-width: 180px; border-left: 1px solid rgba(255,255,255,.1); }
+    .stat-row {
+      height: 28px; line-height: 28px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: flex; align-items: center; gap: 4px;
+      padding: 0 6px;
+      font-size: 10px;
+    }
+    .stat-row:last-child { border-bottom: none; }
+    .stat-row.header {
+      color: rgba(255,255,255,.35);
+      justify-content: center;
       font-size: 11px;
     }
-    .header .year-label {
-      font-size: 12px;
+    .stat-row canvas { flex-shrink: 0; border-radius: 2px; }
+    .stat-label { color: rgba(255,255,255,.6); white-space: nowrap; }
+
+    /* ---- summary panel ---- */
+    .summary {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .summary-card {
+      background: rgba(0,0,0,.15);
+      border-radius: 4px;
+      padding: 10px 14px;
+    }
+    .summary-card h4 { margin: 0 0 6px 0; font-size: 13px; color: rgba(255,255,255,.5); }
+    .summary-card canvas { width: 100%; height: 80px; border-radius: 2px; }
+    .year-bar { display: flex; gap: 4px; align-items: flex-end; height: 80px; }
+    .year-bar-item {
+      flex: 1;
+      border-radius: 2px 2px 0 0;
+      min-height: 4px;
+      position: relative;
+    }
+    .year-bar-item:hover { opacity: .8; }
+    .year-bar-item .bar-label {
+      position: absolute;
+      bottom: -16px;
+      left: 50%; transform: translateX(-50%);
+      font-size: 9px;
       color: rgba(255,255,255,.5);
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -136,7 +159,9 @@
   <div class='table-body'>
     <div class='nav-col' id='navCol'></div>
     <div class='scroll-wrap' id='scrollWrap'></div>
+    <div class='stats-col' id='statsCol'></div>
   </div>
+  <div class='summary' id='summary'></div>
 </div>
 
 <script>
@@ -152,34 +177,65 @@ const scrollStep = (dir) => {
 const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 const baseYear = 2020
 const startMonth = 0
-
 const colToYear = (col) => baseYear + Math.floor((col + startMonth) / 12)
-
-const rows = [
-  { name: 'Income', depth: 0 },
-  { name: '  Wages', depth: 1 },
-  { name: '      Main Job', depth: 2 },
-  { name: '      Side Gig', depth: 2 },
-  { name: '  Investments', depth: 1 },
-  { name: '      Dividends', depth: 2 },
-  { name: '      Interest', depth: 2 },
-  { name: 'Expenses', depth: 0 },
-  { name: '  Housing', depth: 1 },
-  { name: '      Rent', depth: 2 },
-  { name: '      Utilities', depth: 2 },
-  { name: '  Food', depth: 1 },
-  { name: '      Groceries', depth: 2 },
-  { name: '      Dining Out', depth: 2 },
-  { name: '  Transport', depth: 1 },
-  { name: '      Fuel', depth: 2 },
-  { name: '      Insurance', depth: 2 },
-]
+const colToMonth = (col) => (col + startMonth) % 12
 
 const randomVal = () => Math.round(Math.random() * 500 + 50)
 const makeValues = () => Array.from({ length: TOTAL }, () => randomVal())
 
-const cellsLi = (values) =>
-  values.map(v => `<li>${v}</li>`).join('')
+const ALL = Symbol('all')
+const rows = [
+  { name: 'Income', depth: 0, values: ALL },
+  { name: '  Wages', depth: 1, values: ALL },
+  { name: '      Main Job', depth: 2, values: null },
+  { name: '      Side Gig', depth: 2, values: null },
+  { name: '  Investments', depth: 1, values: ALL },
+  { name: '      Dividends', depth: 2, values: null },
+  { name: '      Interest', depth: 2, values: null },
+  { name: 'Expenses', depth: 0, values: ALL },
+  { name: '  Housing', depth: 1, values: ALL },
+  { name: '      Rent', depth: 2, values: null },
+  { name: '      Utilities', depth: 2, values: null },
+  { name: '  Food', depth: 1, values: ALL },
+  { name: '      Groceries', depth: 2, values: null },
+  { name: '      Dining Out', depth: 2, values: null },
+  { name: '  Transport', depth: 1, values: ALL },
+  { name: '      Fuel', depth: 2, values: null },
+  { name: '      Insurance', depth: 2, values: null },
+]
+
+// Generate values for leaf rows, compute sums for parent rows
+rows.forEach(r => {
+  if (r.values === ALL) return
+  r.values = makeValues()
+})
+const computeParent = (row) => {
+  if (row.values !== ALL) return
+  const children = []
+  let i = rows.indexOf(row) + 1
+  while (i < rows.length && rows[i].depth > row.depth) {
+    if (rows[i].depth === row.depth + 1) children.push(rows[i])
+    i++
+  }
+  row.values = Array.from({ length: TOTAL }, (_, c) =>
+    children.reduce((s, ch) => s + (ch.values[c] || 0), 0)
+  )
+}
+;[...rows].sort((a, b) => b.depth - a.depth).forEach(r => { if (r.values === ALL) computeParent(r) })
+
+// Total row (sum of all depth-0 rows)
+const totalValues = Array.from({ length: TOTAL }, (_, c) =>
+  rows.filter(r => r.depth === 0).reduce((s, r) => s + r.values[c], 0)
+)
+
+// ---- helpers ----
+const cellsLi = (values) => values.map(v => `<li>${v}</li>`).join('')
+const rowStats = (values) => {
+  const min = Math.min(...values)
+  const max = Math.max(...values)
+  const avg = Math.round(values.reduce((s,v) => s+v, 0) / values.length)
+  return { min, max, avg }
+}
 
 // ---- build nav column ----
 const navEl = document.getElementById('navCol')
@@ -193,13 +249,12 @@ rows.forEach(r => {
 navHTML += `<div class='nav-row' style='border-top:1px solid rgba(255,255,255,.1)'>Total</div>`
 navEl.innerHTML = navHTML
 
-// ---- build scrollable data column ----
+// ---- build scrollable data ----
 const dataEl = document.getElementById('scrollWrap')
 let dataHTML = ''
 
 // Year row
-let yearCells = []
-let lastYear = null
+let yearCells = []; let lastYear = null
 for (let i = 0; i < TOTAL; i++) {
   const y = colToYear(i)
   yearCells.push(y !== lastYear ? `<li class='year-label'>${y}</li>` : `<li></li>`)
@@ -209,20 +264,130 @@ dataHTML += `<div class='data-row header'><ol>${yearCells.join('')}</ol></div>`
 
 // Month row
 const monthCells = Array.from({ length: TOTAL }, (_, i) =>
-  `<li>${months[(i + startMonth) % 12]}</li>`
+  `<li>${months[colToMonth(i)]}</li>`
 )
 dataHTML += `<div class='data-row header'><ol>${monthCells.join('')}</ol></div>`
 
 // Data rows
 rows.forEach(r => {
-  dataHTML += `<div class='data-row'><ol>${cellsLi(makeValues())}</ol></div>`
+  dataHTML += `<div class='data-row'><ol>${cellsLi(r.values)}</ol></div>`
 })
 
 // Total row
-const totalValues = makeValues()
 dataHTML += `<div class='data-row' style='border-top:1px solid rgba(255,255,255,.1)'><ol>${cellsLi(totalValues)}</ol></div>`
 
 dataEl.innerHTML = dataHTML
+
+// ---- build stats column ----
+const statsEl = document.getElementById('statsCol')
+let statsHTML = `<div class='stat-row header'><span>Trend</span></div>`
+statsHTML += `<div class='stat-row header'></div>`
+
+const allRows = [null, null, ...rows, null]  // placeholders for header rows
+allRows[0] = allRows[1] = 'skip'  // year + month header
+
+// For each data row + total
+;[...rows, { name: 'Total', values: totalValues, depth: 0 }].forEach((r, idx) => {
+  const s = rowStats(r.values)
+  statsHTML += `<div class='stat-row' id='statRow${idx}'>
+    <canvas id='spark${idx}' width='80' height='18'></canvas>
+    <span class='stat-label' title='min ${s.min} / max ${s.max}'>${s.min}–${s.max}</span>
+  </div>`
+})
+
+statsEl.innerHTML = statsHTML
+
+// ---- draw sparklines ----
+const hexAlpha = (hex, a) => {
+  const r = parseInt(hex.slice(1,3), 16), g = parseInt(hex.slice(3,5), 16), b = parseInt(hex.slice(5,7), 16)
+  return `rgba(${r},${g},${b},${a})`
+}
+const SPARK_COLORS = ['#8e44ad', '#e67e22', '#2ecc71', '#e74c3c', '#3498db', '#f1c40f']
+const drawSpark = (canvasId, values, color) => {
+  const c = document.getElementById(canvasId)
+  if (!c) return
+  const ctx = c.getContext('2d')
+  const w = c.width, h = c.height
+  const min = Math.min(...values), max = Math.max(...values), rng = max - min || 1
+  ctx.clearRect(0, 0, w, h)
+  ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 1
+  for (let i = 0; i < values.length; i++) {
+    const x = (i / (values.length - 1)) * w
+    const y = h - ((values[i] - min) / rng) * (h - 2) - 1
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y)
+  }
+  ctx.stroke()
+  // fill under line
+  ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath()
+  ctx.fillStyle = hexAlpha(color, .15)
+  ctx.fill()
+}
+
+;rows.forEach((r, idx) => drawSpark(`spark${idx}`, r.values, SPARK_COLORS[idx % SPARK_COLORS.length]))
+drawSpark(`spark${rows.length}`, totalValues, '#e74c3c')
+
+// ---- yearly summary ----
+const YEARS = 10
+const yearTotals = Array.from({ length: YEARS }, (_, y) => {
+  const start = y * 12, end = start + 12
+  return {
+    year: baseYear + y,
+    total: totalValues.slice(start, end).reduce((s, v) => s + v, 0),
+    months: totalValues.slice(start, end)
+  }
+})
+const maxYearTotal = Math.max(...yearTotals.map(y => y.total))
+
+const sumEl = document.getElementById('summary')
+sumEl.innerHTML = `
+  <div class='summary-card'>
+    <h4>Annual Totals</h4>
+    <div class='year-bar'>
+      ${yearTotals.map(y => {
+        const pct = y.total / maxYearTotal * 100
+        return `<div class='year-bar-item' style='height:${pct}%;background:#e67e22;' title='${y.year}: $${y.total.toLocaleString()}'>
+          <span class='bar-label'>${y.year}</span>
+        </div>`
+      }).join('')}
+    </div>
+  </div>
+  <div class='summary-card'>
+    <h4>Monthly Avg by Year</h4>
+    <canvas id='yearChart' width='400' height='80'></canvas>
+  </div>
+`
+
+// Draw multi-year line chart
+const chartC = document.getElementById('yearChart')
+const cctx = chartC.getContext('2d')
+const cw = chartC.width, ch = chartC.height
+const allMonthly = yearTotals.flatMap(y => y.months)
+const gmin = Math.min(...allMonthly), gmax = Math.max(...allMonthly), grng = gmax - gmin || 1
+
+cctx.clearRect(0, 0, cw, ch)
+const yearColors = ['#8e44ad','#e67e22','#2ecc71','#e74c3c','#3498db','#f1c40f','#1abc9c','#e84393','#00b894','#6c5ce7']
+yearTotals.forEach((y, yi) => {
+  cctx.beginPath(); cctx.strokeStyle = yearColors[yi]; cctx.lineWidth = 1.5
+  y.months.forEach((v, mi) => {
+    const x = (mi / 11) * cw
+    const ypos = ch - ((v - gmin) / grng) * (ch - 4) - 2
+    mi === 0 ? cctx.moveTo(x, ypos) : cctx.lineTo(x, ypos)
+  })
+  cctx.stroke()
+})
+
+// Legend
+const legendEl = document.createElement('div')
+legendEl.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;font-size:10px;'
+yearTotals.forEach((y, yi) => {
+  const dot = document.createElement('span')
+  dot.style.cssText = `display:inline-block;width:8px;height:8px;border-radius:50%;background:${yearColors[yi]};margin-right:2px;`
+  const lbl = document.createElement('span')
+  lbl.textContent = `${y.year} ($${Math.round(y.total / 12).toLocaleString()}/mo)`
+  legendEl.appendChild(dot)
+  legendEl.appendChild(lbl)
+})
+sumEl.querySelector('.summary-card:last-child').appendChild(legendEl)
 </script>
 </body>
 </html>

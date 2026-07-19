@@ -42,16 +42,10 @@ const makeNewChild = (parent, parentClass, name, e) => {
 const monthsWidth = () =>
   appState.totalMonths
 
-const currentOffset = () =>
-  appState.scrollOffset
-
 const appState = observable({
   startMonth: 0,
   baseYear: 2020,
   totalMonths: 120,
-  viewSize: 15,
-  scrollOffset: 0,
-  slideDir: 0,
   editing: false,
   editingNode: null,
   total: function() { console.log('TOT'); return sumChildren(this.sections) },
@@ -82,4 +76,4 @@ function init() {
   //makeNewChild(c2, 'category', 'ext 2-1-3')
 }
 
-module.exports = {appState, makeNewChild, init, currentOffset}
+module.exports = {appState, makeNewChild, init}
