@@ -140,7 +140,7 @@ const scrollContent = () => {
     yo`<div class='data-row header'><ol>${yearCells}</ol></div>`,
     yo`<div class='data-row header'><ol>${monthCells}</ol></div>`,
     ...dataRows,
-    yo`<div class='data-row total' style='border-top:1px solid rgba(255,255,255,.1)'><ol>${Array.from({ length: totalMonths }, (_, i) => yo`<li>${appState.total[i] || 0}</li>`)}</ol></div>`
+    yo`<div class='data-row total'><ol>${Array.from({ length: totalMonths }, (_, i) => yo`<li>${appState.total[i] || 0}</li>`)}</ol></div>`
   ]
 }
 
@@ -166,7 +166,7 @@ const renderNav = () => {
   }
   walkSections(appState.sections)
 
-  rows.push(yo`<div class='nav-row' style='border-top:1px solid rgba(255,255,255,.1)'><span class='name'>Total</span></div>`)
+  rows.push(yo`<div class='nav-row total'><span class='name'>Total</span></div>`)
 
   return rows
 }
@@ -184,7 +184,7 @@ const renderStats = () => {
     </div>`)
   })
   const s = computeStats(appState.total, totalMonths)
-  rows.push(yo`<div class='stat-row' style='border-top:1px solid rgba(255,255,255,.1)'>
+  rows.push(yo`<div class='stat-row total'>
     <canvas class='spark-canvas' data-idx='${_statNodes.length}' width='80' height='18'></canvas>
     <span class='stat-label'>${s.min}–${s.max}</span>
   </div>`)

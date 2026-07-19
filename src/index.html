@@ -18,28 +18,16 @@
         background-color: #8e44ad;
         border-radius: 5px 5px 0 0;
         margin: -14px -14px 20px -14px;
-        padding: 5px;
-        font-size: 24px;
+        padding: 0 10px;
+        font-size: 20px;
         height: 46px;
-        line-height: 46px;
+        display: flex;
+        align-items: center;
       }
-      .title .left {
-        float: left;
-        width: 20%;
-      }
-      .title .right {
-        float: right;
-        width: 20%;
-        text-align: right;
-      }
-      .title .center {
-        display: inline-block;
-        width: 60%;
-      }
-      .title h3 {
-        text-align: center;
-        margin: 0 auto;
-      }
+      .title .left { flex: 0 0 auto; }
+      .title .right { flex: 0 0 auto; margin-left: auto; }
+      .title .center { flex: 1 1 auto; text-align: center; }
+      .title h3 { margin: 0; font-size: 18px; font-weight: 600; }
       .budget {
         text-align: initial;
         display: inline-block;
@@ -56,24 +44,40 @@
 
       /* ---- buttons ---- */
       button {
-        background-color: rgba(255, 255, 255, 0.3);
-        margin: 4px;
-        border-radius: 8px;
-        border: none;
-        height: 18px;
-        width: 20px;
+        background-color: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255,255,255,.15);
+        border-radius: 6px;
+        color: #fff;
+        cursor: pointer;
+        font-size: 13px;
+        transition: background-color .15s;
       }
+      button:hover { background-color: rgba(255, 255, 255, 0.35); }
+      button:active { background-color: rgba(255, 255, 255, 0.15); }
       .edit-button {
         height: 30px;
-        width: 50px;
+        width: 56px;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 0;
       }
+      .edit-button.active { background-color: #e67e22; border-color: #d35400; }
       .year-chooser button {
         height: 30px;
-        width: 20px;
-        margin: 0;
+        width: 28px;
+        margin: 0 1px;
+        font-weight: 700;
+        font-size: 15px;
       }
       .new {
-        float: left;
+        margin-bottom: 8px;
+      }
+      .new button {
+        width: 26px;
+        height: 26px;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 0;
       }
 
       /* ---- table body: nav col + scrollable data ---- */
@@ -99,14 +103,33 @@
         border-bottom: 1px solid rgba(255,255,255,.08);
         border-right: 1px solid rgba(255,255,255,.1);
         text-align: left;
+        cursor: pointer;
+        transition: background-color .1s;
       }
+      .nav-row:hover { background-color: rgba(255,255,255,.04); }
       .nav-col .nav-row:last-child { border-bottom: none; }
       .nav-row.header {
-        color: rgba(255, 255, 255, 0.3);
-        font-size: 12px;
+        color: rgba(255, 255, 255, 0.25);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        cursor: default;
       }
-      .nav-row.indent-cat { padding-left: 20px; }
-      .nav-row.indent-ext { padding-left: 34px; }
+      .nav-row.header:hover { background-color: transparent; }
+      .nav-row.total { border-top: 1px solid rgba(255,255,255,.15) !important; font-weight: 600; }
+      .nav-row.indent-cat {
+        padding-left: 18px;
+        border-left: 2px solid rgba(230,126,34,.4);
+        font-size: 12px;
+        color: rgba(255,255,255,.75);
+      }
+      .nav-row.indent-ext {
+        padding-left: 32px;
+        border-left: 2px solid rgba(46,204,113,.3);
+        font-size: 12px;
+        color: rgba(255,255,255,.6);
+      }
+      .nav-row .name { pointer-events: none; }
       .nav-row input {
         width: 100%;
         height: 100%;
@@ -115,6 +138,7 @@
         font: inherit;
         background-color: inherit;
         color: inherit;
+        outline: 1px solid rgba(255,255,255,.3);
       }
 
       /* ---- scrollable data ---- */
@@ -127,16 +151,24 @@
         scroll-behavior: smooth;
       }
       .scroll-wrap::-webkit-scrollbar { height: 6px; }
-      .scroll-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 3px; }
+      .scroll-wrap::-webkit-scrollbar-track { background: rgba(0,0,0,.1); border-radius: 3px; }
+      .scroll-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,.25); border-radius: 3px; }
+      .scroll-wrap::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.4); }
 
+      .data-row.section { font-weight: 600; }
+      .data-row.extended { font-size: 12px; color: rgba(255,255,255,.7); }
       .data-row {
         display: flex;
         height: 28px;
         line-height: 28px;
-        border-bottom: 1px solid rgba(255,255,255,.08);
+        border-bottom: 1px solid rgba(255,255,255,.06);
+        transition: background-color .1s;
       }
+      .data-row:hover { background-color: rgba(255,255,255,.03); }
       .data-row:last-child { border-bottom: none; }
-      .data-row.header { color: rgba(255,255,255,.35); }
+      .data-row.header { color: rgba(255,255,255,.3); font-size: 11px; cursor: default; }
+      .data-row.header:hover { background-color: transparent; }
+      .data-row.total { font-weight: 600; border-top: 1px solid rgba(255,255,255,.15) !important; }
 
       ol {
         display: flex;
@@ -188,19 +220,26 @@
       }
       .stat-row {
         height: 28px; line-height: 28px;
-        border-bottom: 1px solid rgba(255,255,255,.08);
-        display: flex; align-items: center; gap: 4px;
-        padding: 0 6px;
+        border-bottom: 1px solid rgba(255,255,255,.06);
+        display: flex; align-items: center; gap: 6px;
+        padding: 0 8px;
         font-size: 10px;
+        transition: background-color .1s;
       }
+      .stat-row:hover { background-color: rgba(255,255,255,.03); }
       .stat-row:last-child { border-bottom: none; }
       .stat-row.header {
-        color: rgba(255,255,255,.35);
+        color: rgba(255,255,255,.3);
         justify-content: center;
         font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        cursor: default;
       }
+      .stat-row.header:hover { background-color: transparent; }
+      .stat-row.total { border-top: 1px solid rgba(255,255,255,.15) !important; font-weight: 600; }
       .stat-row canvas { flex-shrink: 0; border-radius: 2px; }
-      .stat-label { color: rgba(255,255,255,.6); white-space: nowrap; }
+      .stat-label { color: rgba(255,255,255,.55); white-space: nowrap; }
 
       /* ---- summary panel ---- */
       .summary {
