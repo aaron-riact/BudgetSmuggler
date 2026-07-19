@@ -29,6 +29,20 @@ const getMonthsArray = () => {
   )
 }
 
+const getYearsArray = () => {
+  const offset = currentOffset()
+  const size = getBudgetSize()
+  const rows = []
+  let lastYear = null
+  for (let i = 0; i < size; i++) {
+    const col = offset + i
+    const year = appState.baseYear + Math.floor((col + appState.startMonth) / 12)
+    rows.push(year !== lastYear ? String(year) : '')
+    lastYear = year
+  }
+  return rows
+}
+
 const makeRow = (node, klass) =>
   yo`<ol>
     ${getColArray().map(month =>
@@ -83,13 +97,27 @@ const renderEditButton = (root, rootClass) => {
 }
 
 const renderMonths = () =>
-  yo`<div class='header'>
-    <div class='nav'>
-      <span class='name'>Months</span>
+  yo`<div>
+    <div class='header'>
+      <div class='nav'>
+        <span class='name'>Year</span>
+      </div>
+      <div class='months'>
+        <ol>
+          ${getYearsArray().map(y =>
+            y ? yo`<li class='year-label'>${y}</li>` : yo`<li></li>`
+          )}
+        </ol>
+      </div>
     </div>
-    ${renderEditButton(appState, 'root')}
-    <div class='months'>
-      ${makeRow({values: getMonthsArray()})}
+    <div class='header'>
+      <div class='nav'>
+        <span class='name'>Months</span>
+      </div>
+      ${renderEditButton(appState, 'root')}
+      <div class='months'>
+        ${makeRow({values: getMonthsArray()})}
+      </div>
     </div>
   </div>
   ` 
