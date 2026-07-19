@@ -61,8 +61,7 @@ const toggleEditMode = () =>
 const nextBudget = (amt) => {
   const step = 12
   const maxOffset = appState.totalMonths - getBudgetSize()
-  const next = appState.scrollOffset + amt * step
-  appState.scrollOffset = next > maxOffset ? 0 : next < 0 ? maxOffset : next
+  appState.scrollOffset = Math.max(0, Math.min(appState.scrollOffset + amt * step, maxOffset))
 }
 
 const renderTitle = () =>
