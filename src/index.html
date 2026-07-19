@@ -112,19 +112,12 @@
       .months {
         overflow: hidden;
       }
-      .months ol.slide-f {
-        animation: slide-f 0.35s ease-out forwards;
+      .months ol.slide {
+        animation: slide 0.35s ease-out forwards;
       }
-      .months ol.slide-b {
-        animation: slide-b 0.35s ease-out forwards;
-      }
-      @keyframes slide-f {
-        from { transform: translateX(0); }
-        to { transform: translateX(-600px); }
-      }
-      @keyframes slide-b {
-        from { transform: translateX(-600px); }
-        to { transform: translateX(0); }
+      @keyframes slide {
+        from { transform: translateX(var(--slide-from)); }
+        to { transform: translateX(var(--slide-to)); }
       }
       .nav {
         display: inline-block;

@@ -1,6 +1,6 @@
 const yo = require('yo-yo');
 const {appState, makeNewChild, init, currentOffset} = require('./appState')
-const {autorun} = require("mobx");
+const {autorun, transaction} = require("mobx");
 
 const onClick = (node, ev) => { 
   //console.log(computed);
@@ -31,9 +31,12 @@ const getColArray = () =>
   Array.from({length: getBudgetSize()}, (_, i) => i + currentOffset())
 
 const makeRow = (node, klass) => {
-  const slideCls = appState.slideDir ? (appState.slideDir === 1 ? 'slide-f' : 'slide-b') : ''
+  const slideDir = appState.slideDir
+  const from = slideDir === -1 ? -(SLIDE_STEP * COL_WIDTH) : 0
+  const to = slideDir === -1 ? 0 : -(SLIDE_STEP * COL_WIDTH)
+  const slideVars = slideDir ? `--slide-from: ${from}px; --slide-to: ${to}px` : ''
   return yo`
-  <ol class='${slideCls}'>
+  <ol class='${slideDir ? 'slide' : ''}' style='${slideVars}'>
     ${getRenderArray().map(i => yo`
       <li>
         ${klass === 'extended'
@@ -55,10 +58,13 @@ const nextBudget = (amt) => {
   const newOffset = Math.max(0, Math.min(oldOffset + amt * SLIDE_STEP, maxOffset))
   if (oldOffset === newOffset) return
   appState.slideDir = amt
+
   setTimeout(() => {
-    appState.scrollOffset = newOffset
-    appState.slideDir = 0
-  }, 350)
+    transaction(() => {
+      appState.scrollOffset = newOffset
+      appState.slideDir = 0
+    })
+  }, 370)
 }
 
 const renderTitle = () =>
@@ -95,7 +101,10 @@ const renderEditButton = (root, rootClass) => {
 const renderMonths = () => {
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
   const cols = getRenderArray()
-  const slideCls = appState.slideDir ? (appState.slideDir === 1 ? 'slide-f' : 'slide-b') : ''
+  const slideDir = appState.slideDir
+  const from = slideDir === -1 ? -(SLIDE_STEP * COL_WIDTH) : 0
+  const to = slideDir === -1 ? 0 : -(SLIDE_STEP * COL_WIDTH)
+  const slideVars = slideDir ? `--slide-from: ${from}px; --slide-to: ${to}px` : ''
 
   const years = []
   let lastYear = null
@@ -112,14 +121,14 @@ const renderMonths = () => {
     <div class='header'>
       <div class='nav'><span class='name'>Year</span></div>
       <div class='months'>
-        <ol class='${slideCls}'>${years.map(y => y ? yo`<li class='year-label'>${y}</li>` : yo`<li></li>`)}</ol>
+        <ol class='${slideDir ? 'slide' : ''}' style='${slideVars}'>${years.map(y => y ? yo`<li class='year-label'>${y}</li>` : yo`<li></li>`)}</ol>
       </div>
     </div>
     <div class='header'>
       <div class='nav'><span class='name'>Months</span></div>
       ${renderEditButton(appState, 'root')}
       <div class='months'>
-        <ol class='${slideCls}'>${monthLabels.map(m => yo`<li>${m}</li>`)}</ol>
+        <ol class='${slideDir ? 'slide' : ''}' style='${slideVars}'>${monthLabels.map(m => yo`<li>${m}</li>`)}</ol>
       </div>
     </div>
   </div>`
