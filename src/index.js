@@ -34,9 +34,11 @@ const makeRow = (node, klass) => {
   const slideDir = appState.slideDir
   const from = slideDir === -1 ? -(SLIDE_STEP * COL_WIDTH) : 0
   const to = slideDir === -1 ? 0 : -(SLIDE_STEP * COL_WIDTH)
-  const slideVars = slideDir ? `--slide-from: ${from}px; --slide-to: ${to}px` : ''
+  const slideStyle = slideDir
+    ? `--slide-from: ${from}px; --slide-to: ${to}px; transform: translateX(${from}px)`
+    : ''
   return yo`
-  <ol class='${slideDir ? 'slide' : ''}' style='${slideVars}'>
+  <ol style='${slideStyle}' class='${slideDir ? 'slide' : ''}'>
     ${getRenderArray().map(i => yo`
       <li>
         ${klass === 'extended'
@@ -104,7 +106,9 @@ const renderMonths = () => {
   const slideDir = appState.slideDir
   const from = slideDir === -1 ? -(SLIDE_STEP * COL_WIDTH) : 0
   const to = slideDir === -1 ? 0 : -(SLIDE_STEP * COL_WIDTH)
-  const slideVars = slideDir ? `--slide-from: ${from}px; --slide-to: ${to}px` : ''
+  const slideStyle = slideDir
+    ? `--slide-from: ${from}px; --slide-to: ${to}px; transform: translateX(${from}px)`
+    : ''
 
   const years = []
   let lastYear = null
@@ -120,15 +124,15 @@ const renderMonths = () => {
   return yo`<div>
     <div class='header'>
       <div class='nav'><span class='name'>Year</span></div>
-      <div class='months'>
-        <ol class='${slideDir ? 'slide' : ''}' style='${slideVars}'>${years.map(y => y ? yo`<li class='year-label'>${y}</li>` : yo`<li></li>`)}</ol>
+      <div class='months' style='width: ${getBudgetSize() * COL_WIDTH}px'>
+        <ol style='${slideStyle}' class='${slideDir ? 'slide' : ''}'>${years.map((y, idx) => y ? yo`<li class='year-label'>${y}</li>` : yo`<li></li>`)}</ol>
       </div>
     </div>
     <div class='header'>
       <div class='nav'><span class='name'>Months</span></div>
       ${renderEditButton(appState, 'root')}
-      <div class='months'>
-        <ol class='${slideDir ? 'slide' : ''}' style='${slideVars}'>${monthLabels.map(m => yo`<li>${m}</li>`)}</ol>
+      <div class='months' style='width: ${getBudgetSize() * COL_WIDTH}px'>
+        <ol style='${slideStyle}' class='${slideDir ? 'slide' : ''}'>${monthLabels.map(m => yo`<li>${m}</li>`)}</ol>
       </div>
     </div>
   </div>`
@@ -148,7 +152,7 @@ const makeNode = (node, klass, children) =>
       }
     </div>
     ${renderEditButton(node, klass)}
-    <div class='months'>
+    <div class='months' style='width: ${getBudgetSize() * COL_WIDTH}px'>
       ${makeRow(node, klass)}
     </div>
     <div class='children'>
