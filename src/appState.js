@@ -47,8 +47,8 @@ const currentOffset = () =>
 
 const appState = observable({
   startMonth: 0,
-  baseYear: 0,
-  totalMonths: 27,
+  baseYear: 2020,
+  totalMonths: 120,
   viewSize: 15,
   scrollOffset: 0,
   editing: false,
@@ -59,9 +59,7 @@ const appState = observable({
 
 function init() {
   const template = require('./template.json')
-  const farm = template.farms[0]
-  appState.baseYear = new Date(farm.current_financial_year[0]).getFullYear()
-  farm.report_sections.forEach(src_sec => {
+  template.farms[0].report_sections.forEach(src_sec => {
     const sec = makeNewChild(appState, 'root', src_sec.name)
     src_sec.categories.forEach(src_cat => {
       const cat = makeNewChild(sec, 'section', src_cat.name)
