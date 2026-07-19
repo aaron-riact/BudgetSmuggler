@@ -1,0 +1,217 @@
+<!doctype html>
+<html>
+<head>
+  <title>BudgetSmuggler — Scroll PoC</title>
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Open Sans", sans-serif;
+      background: #f6704b;
+      margin: 0;
+      padding: 40px;
+    }
+    .budget {
+      display: inline-block;
+      max-width: calc(100vw - 80px);
+      background: #354b60;
+      border-radius: 5px;
+      color: #fff;
+      padding: 14px;
+      box-shadow: 0 0 40px 5px rgba(0,0,0,.4);
+    }
+    .title {
+      background: #8e44ad;
+      border-radius: 5px 5px 0 0;
+      margin: -14px -14px 20px -14px;
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 46px;
+    }
+    .title h3 { margin: 0; font-size: 24px; }
+    .controls { display: flex; gap: 8px; }
+    .controls button {
+      background: rgba(255,255,255,.3);
+      border: none;
+      border-radius: 8px;
+      height: 30px;
+      width: 30px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .controls button:hover { background: rgba(255,255,255,.5); }
+
+    /* ---- scroll container ---- */
+    .scroll-wrap {
+      overflow-x: auto;
+      overflow-y: visible;
+      scroll-snap-type: x proximity;
+      scroll-behavior: smooth;
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 4px;
+    }
+    .scroll-wrap::-webkit-scrollbar { height: 6px; }
+    .scroll-wrap::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 3px; }
+
+    /* ---- rows ---- */
+    .row {
+      display: flex;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      min-height: 28px;
+      line-height: 28px;
+    }
+    .row:last-child { border-bottom: none; }
+    .row.header { color: rgba(255,255,255,.35); }
+
+    .nav {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      width: 170px;
+      min-width: 170px;
+      background: #354b60;
+      padding: 0 8px;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .row.header .nav { background: #354b60; }
+    .row:not(.header) .nav {
+      border-right: 1px solid rgba(255,255,255,.1);
+    }
+    .indent-cat .nav { padding-left: 20px; }
+    .indent-ext .nav { padding-left: 34px; }
+
+    ol {
+      display: flex;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+    li {
+      width: 40px;
+      min-width: 40px;
+      margin: 0 5px;
+      text-align: right;
+      padding: 0 2px;
+      font-size: 12px;
+      scroll-snap-align: start;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: clip;
+    }
+    .header li {
+      text-align: center;
+      font-size: 11px;
+    }
+    .header .year-label {
+      font-size: 12px;
+      color: rgba(255,255,255,.5);
+    }
+  </style>
+</head>
+<body>
+
+<div class='budget'>
+  <div class='title'>
+    <h3>BudgetSmuggler</h3>
+    <div class='controls'>
+      <button onclick='scrollStep(-1)'>B</button>
+      <button onclick='scrollStep(1)'>F</button>
+    </div>
+  </div>
+  <div class='scroll-wrap' id='scrollWrap'>
+    <!-- year row -->
+    <div class='row header' id='yearRow'></div>
+    <!-- month row -->
+    <div class='row header' id='monthRow'></div>
+    <!-- data rows injected here -->
+    <div id='dataRows'></div>
+  </div>
+</div>
+
+<script>
+const TOTAL = 120  // total data columns
+const PAGE = 15     // columns visible at once
+const STEP = 12     // columns per scroll
+const COL_W = 50    // 40px li + 2*5px margin
+
+const scrollStep = (dir) => {
+  const el = document.getElementById('scrollWrap')
+  el.scrollBy({ left: dir * STEP * COL_W, behavior: 'smooth' })
+}
+
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+const baseYear = 2020
+const startMonth = 0
+
+const colToYear = (col) => baseYear + Math.floor((col + startMonth) / 12)
+
+const rows = [
+  { name: 'Income', depth: 0, open: true },
+  { name: '  Wages', depth: 1, open: true },
+  { name: '      Main Job', depth: 2 },
+  { name: '      Side Gig', depth: 2 },
+  { name: '  Investments', depth: 1 },
+  { name: '      Dividends', depth: 2 },
+  { name: '      Interest', depth: 2 },
+  { name: 'Expenses', depth: 0 },
+  { name: '  Housing', depth: 1 },
+  { name: '      Rent', depth: 2 },
+  { name: '      Utilities', depth: 2 },
+  { name: '  Food', depth: 1 },
+  { name: '      Groceries', depth: 2 },
+  { name: '      Dining Out', depth: 2 },
+  { name: '  Transport', depth: 1 },
+  { name: '      Fuel', depth: 2 },
+  { name: '      Insurance', depth: 2 },
+]
+
+const randomVal = () => Math.round(Math.random() * 500 + 50)
+const makeValues = () => Array.from({ length: TOTAL }, () => randomVal())
+
+const totalValues = makeValues()
+
+const cellsHTML = (values) =>
+  values.map((v, i) => `<li data-col='${i}'>${v}</li>`).join('')
+
+const rowHTML = (row, values) => {
+  const cls = row.depth === 0 ? '' : row.depth === 1 ? 'indent-cat' : 'indent-ext'
+  return `<div class='row ${cls}'><div class='nav'>${row.name}</div><ol>${cellsHTML(values)}</ol></div>`
+}
+
+// Year headers
+const yearCells = []
+let lastYear = null
+for (let i = 0; i < TOTAL; i++) {
+  const y = colToYear(i)
+  if (y !== lastYear) {
+    yearCells.push(`<li class='year-label' data-col='${i}'>${y}</li>`)
+  } else {
+    yearCells.push(`<li data-col='${i}'></li>`)
+  }
+  lastYear = y
+}
+document.getElementById('yearRow').innerHTML = `<div class='nav'>Year</div><ol>${yearCells.join('')}</ol>`
+
+// Month headers
+const monthCells = Array.from({ length: TOTAL }, (_, i) =>
+  `<li data-col='${i}'>${months[(i + startMonth) % 12]}</li>`
+)
+document.getElementById('monthRow').innerHTML = `<div class='nav'>Months</div><ol>${monthCells.join('')}</ol>`
+
+// Data rows
+const dataContainer = document.getElementById('dataRows')
+dataContainer.innerHTML = rows.map(r => rowHTML(r, makeValues())).join('')
+
+// total row
+dataContainer.innerHTML +=
+  `<div class='row'><div class='nav' style='border-top:1px solid rgba(255,255,255,.1)'>Total</div><ol>${cellsHTML(totalValues)}</ol></div>`
+</script>
+</body>
+</html>
