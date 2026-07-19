@@ -136,13 +136,12 @@ const scrollContent = () => {
   }
   walkSections(appState.sections)
 
-  return yo`
-    <div class='data-row header'><ol>${yearCells}</ol></div>
-    <div class='data-row header'><ol>${monthCells}</ol></div>
-    ${dataRows}
-    <div class='data-row total' style='border-top:1px solid rgba(255,255,255,.1)'>
-      <ol>${Array.from({ length: totalMonths }, (_, i) => yo`<li>${appState.total[i] || 0}</li>`)}</ol>
-    </div>`
+  return [
+    yo`<div class='data-row header'><ol>${yearCells}</ol></div>`,
+    yo`<div class='data-row header'><ol>${monthCells}</ol></div>`,
+    ...dataRows,
+    yo`<div class='data-row total' style='border-top:1px solid rgba(255,255,255,.1)'><ol>${Array.from({ length: totalMonths }, (_, i) => yo`<li>${appState.total[i] || 0}</li>`)}</ol></div>`
+  ]
 }
 
 const renderNav = () => {
